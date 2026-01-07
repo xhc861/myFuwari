@@ -42,8 +42,8 @@ export const navBarConfig: NavBarConfig = {
 	links: [
 		LinkPreset.Home,
 		LinkPreset.Archive,
-		LinkPreset.About,
 		LinkPreset.Other,
+		LinkPreset.About,
 		{
 			name: "GitHub",
 			url: "https://github.com/xhc861/myFuwari", // Internal links should not include the base path, as it is automatically added
