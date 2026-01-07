@@ -9,7 +9,7 @@ import { LinkPreset } from "./types/config";
 
 export const siteConfig: SiteConfig = {
 	title: "xhc861's Blog",
-	subtitle: "xhc861的安全屋",
+	subtitle: "博客，远不止于博客",
 	lang: "zh_CN", // Language code, e.g. 'en', 'zh_CN', 'ja', etc.
 	themeColor: {
 		hue: 250, // Default hue for the theme color, from 0 to 360. e.g. red: 0, teal: 200, cyan: 250, pink: 345
@@ -43,6 +43,7 @@ export const navBarConfig: NavBarConfig = {
 		LinkPreset.Home,
 		LinkPreset.Archive,
 		LinkPreset.About,
+		LinkPreset.Other,
 		{
 			name: "GitHub",
 			url: "https://github.com/xhc861/myFuwari", // Internal links should not include the base path, as it is automatically added
@@ -54,7 +55,7 @@ export const navBarConfig: NavBarConfig = {
 export const profileConfig: ProfileConfig = {
 	avatar: "assets/images/avatar.jpg", // Relative to the /src directory. Relative to the /public directory if it starts with '/'
 	name: "xhc861",
-	bio: "这就是xhc861的Blog，不定期发表内容，记得来看！",
+	bio: "欢迎来到xhc861的网站，不定期更新！",
 	links: [
 		{
 			name: "微信",
