@@ -17,7 +17,7 @@ export const siteConfig: SiteConfig = {
 	},
 	banner: {
 		enable: true,
-		src: "https://t.alcy.cc/fj", // Relative to the /src directory. Relative to the /public directory if it starts with '/'
+		src: "assets/images/backg.webp", // Relative to the /src directory. Relative to the /public directory if it starts with '/'
 		position: "center", // Equivalent to object-position, only supports 'top', 'center', 'bottom'. 'center' by default
 		credit: {
 			enable: false, // Display the credit text of the banner image
@@ -44,6 +44,7 @@ export const navBarConfig: NavBarConfig = {
 		LinkPreset.Archive,
 		LinkPreset.Other,
 		LinkPreset.About,
+		LinkPreset.friend,
 		{
 			name: "GitHub",
 			url: "https://github.com/xhc861/myFuwari", // Internal links should not include the base path, as it is automatically added
@@ -55,7 +56,7 @@ export const navBarConfig: NavBarConfig = {
 export const profileConfig: ProfileConfig = {
 	avatar: "assets/images/avatar.jpg", // Relative to the /src directory. Relative to the /public directory if it starts with '/'
 	name: "xhc861",
-	bio: "欢迎来到xhc861的网站，不定期更新！",
+	bio: "博客，远不止于博客~",
 	links: [
 		{
 			name: "微信",

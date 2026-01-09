@@ -1,5 +1,4 @@
 ---
-
 import { profileConfig } from "../config";
 import { url } from "../utils/url-utils";
 
@@ -8,7 +7,7 @@ const launchDate = new Date("2026-01-02");
 const today = new Date();
 const daysRunning = Math.floor((today - launchDate) / (1000 * 60 * 60 * 24));
 
-let dailyQuote = "“愿你眼中总有光芒，活成你想要的模样。”"; //猜猜这是什么
+let dailyQuote = "愿你眼中总有光芒，活成你想要的模样。";
 
 // 尝试从每日一言API获取句子
 try {
@@ -16,7 +15,7 @@ try {
   if (res.ok) {
     const data = await res.json();
     if (data && data.hitokoto) {
-      dailyQuote = `“${data.hitokoto}” — ${data.from || "佚名"}`;
+      dailyQuote = `"${data.hitokoto}" — ${data.from || "佚名"}`;
     }
   }
 } catch (e) {
@@ -48,3 +47,56 @@ try {
         项目并二次开发
     </div>
 </div>
+
+<script>
+  // 客户端脚本 - 动态更新运行时间和诗句
+  // 这个脚本在客户端执行，确保每次访问都能获取最新数据
+  
+  function updateFooter() {
+    // 更新运行时间
+    const launchDate = new Date("2026-01-02");
+    const today = new Date();
+    const daysRunning = Math.floor((today - launchDate) / (1000 * 60 * 60 * 24));
+    const runDaysElement = document.getElementById('run-days');
+    if (runDaysElement) {
+      runDaysElement.textContent = daysRunning;
+    }
+
+    // 获取每日一言
+    fetch("https://v1.hitokoto.cn?c=i&encode=json")
+      .then(res => {
+        if (!res.ok) throw new Error('API request failed');
+        return res.json();
+      })
+      .then(data => {
+        if (data && data.hitokoto) {
+          const dailyQuoteElement = document.getElementById('daily-quote');
+          if (dailyQuoteElement) {
+            dailyQuoteElement.textContent = `"${data.hitokoto}" — ${data.from || "佚名"}`;
+          }
+        }
+      })
+      .catch(e => {
+        console.warn("每日一言 API 获取失败:", e.message);
+        // 保持使用服务端渲染的默认值
+      });
+  }
+
+  // 页面加载完成后执行
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', updateFooter);
+  } else {
+    updateFooter();
+  }
+
+  // 可选：定期刷新运行时间（每分钟更新一次）
+  setInterval(() => {
+    const launchDate = new Date("2026-01-02");
+    const today = new Date();
+    const daysRunning = Math.floor((today - launchDate) / (1000 * 60 * 60 * 24));
+    const runDaysElement = document.getElementById('run-days');
+    if (runDaysElement) {
+      runDaysElement.textContent = daysRunning;
+    }
+  }, 60000); // 每60秒更新一次
+</script>

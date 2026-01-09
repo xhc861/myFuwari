@@ -35,4 +35,9 @@ export const zh_CN: Translation = {
 	[Key.author]: "作者",
 	[Key.publishedAt]: "发布于",
 	[Key.license]: "许可协议",
+
+	[Key.friends]: "友链",
+	[Key.friendLink]: "申请友链",
+	[Key.friendLinkDescription]: "欢迎申请友链，请通过以下方式联系我",
+	[Key.friendLinkText]: "联系我",
 };

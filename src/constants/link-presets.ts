@@ -18,5 +18,9 @@ export const LinkPresets: { [key in LinkPreset]: NavBarLink } = {
 	[LinkPreset.Other]: {
 		name:"展板",
 		url:"/functions/"
+	},
+	[LinkPreset.friend]:{
+		name:"友链",
+		url:"/friends/"
 	}
 };
