@@ -16,11 +16,11 @@ export const LinkPresets: { [key in LinkPreset]: NavBarLink } = {
 		url: "/archive/",
 	},
 	[LinkPreset.Other]: {
-		name:"展板",
-		url:"/functions/"
+		name: "展板",
+		url: "/gallery/",
 	},
-	[LinkPreset.friend]:{
-		name:"友链",
-		url:"/friends/"
-	}
+	[LinkPreset.friend]: {
+		name: "友链",
+		url: "/friends/",
+	},
 };
