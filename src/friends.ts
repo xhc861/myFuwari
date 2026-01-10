@@ -12,7 +12,7 @@ export const friends: {
 		url: "https://siiway.org",
 		pin: true,
 	},
-    {
+	{
 		name: "wyf9",
 		desc: "什么都有的个人 blog?",
 		avatar: "https://wyf9.top/favicon.png",
@@ -21,7 +21,8 @@ export const friends: {
 	{
 		name: "Shattered217のBlog",
 		desc: "一个有趣的白日梦想家",
-		avatar: "https://nvcc-v.com/wp-content/uploads/2025/12/1766747848-250x250nobk.png",
+		avatar:
+			"https://nvcc-v.com/wp-content/uploads/2025/12/1766747848-250x250nobk.png",
 		url: "https://nvcc-v.com/",
 	},
 	{
@@ -83,7 +84,8 @@ export const friends: {
 	{
 		name: "Murasame",
 		desc: "我已经下了决心，要与深爱的少女一起在这片土地生活下去。我对此无比自豪。",
-		avatar: "https://blog.shirayukinoa.top/_astro/Murasame.0zIy958b_ZajvDy.webp",
-		url: "https://blog.shirayukinoa.top/"
+		avatar:
+			"https://blog.shirayukinoa.top/_astro/Murasame.0zIy958b_ZajvDy.webp",
+		url: "https://blog.shirayukinoa.top/",
 	},
 ];

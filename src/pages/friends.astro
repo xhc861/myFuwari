@@ -26,6 +26,7 @@ const sortedFriends = [...pinnedFriends, ...shuffledNonPinnedFriends];
 	<div class="space-y-8">
 		<!-- 标题部分 -->
 		<div class="space-y-3">
+			<br><br>  <!-- 两个br能解决的干嘛要重写css呢(/doge) -->
 			<h1 class="text-4xl md:text-5xl font-bold text-gray-900 dark:text-gray-100">
 				{i18n(I18nKey.friends)}
 			</h1>
@@ -63,7 +64,7 @@ const sortedFriends = [...pinnedFriends, ...shuffledNonPinnedFriends];
 				<div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6">
 					<!-- 邮件联系 -->
 					<a
-						href="mailto:xhc861@outlook.com"
+						href="mailto:xhc861@siiway.org"
 						class="group relative overflow-hidden rounded-xl p-6 bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-950/30 dark:to-blue-900/20 border border-blue-200 dark:border-blue-800 hover:shadow-lg transition-all duration-300"
 					>
 						<div class="absolute inset-0 bg-gradient-to-br from-blue-400/0 to-blue-500/0 group-hover:from-blue-400/10 group-hover:to-blue-500/10 transition-all duration-300"></div>
@@ -75,7 +76,7 @@ const sortedFriends = [...pinnedFriends, ...shuffledNonPinnedFriends];
 							</div>
 							<div>
 								<h3 class="font-bold text-gray-900 dark:text-gray-100">邮件</h3>
-								<p class="text-sm text-gray-600 dark:text-gray-400">xhc861@outlook.com</p>
+								<p class="text-sm text-gray-600 dark:text-gray-400">xhc861@siiway.org</p>
 							</div>
 						</div>
 					</a>
@@ -108,19 +109,23 @@ const sortedFriends = [...pinnedFriends, ...shuffledNonPinnedFriends];
 					<ul class="space-y-2 text-gray-600 dark:text-gray-400 text-sm">
 						<li class="flex items-start gap-3">
 							<span class="text-blue-500 dark:text-blue-400 font-bold mt-0.5">✓</span>
-							<span>拥有独立域名的个人博客</span>
+							<span>拥有自己固定域名的个人博客</span>
 						</li>
 						<li class="flex items-start gap-3">
 							<span class="text-blue-500 dark:text-blue-400 font-bold mt-0.5">✓</span>
-							<span>内容积极向上，定期更新</span>
+							<span>内容积极向上（个人观点和国外技术等除外）</span>
 						</li>
 						<li class="flex items-start gap-3">
 							<span class="text-blue-500 dark:text-blue-400 font-bold mt-0.5">✓</span>
-							<span>提供清晰的博客描述和头像</span>
+							<span>具清晰的博客描述和头像</span>
 						</li>
 						<li class="flex items-start gap-3">
 							<span class="text-blue-500 dark:text-blue-400 font-bold mt-0.5">✓</span>
-							<span>已添加本站友链</span>
+							<span>已添加本站友链（可直接fork或copy）</span>
+						</li>
+						<li class="flex items-start gap-3">
+							<span class="text-blue-500 dark:text-blue-400 font-bold mt-0.5">✓</span>
+							<span>SiiWay官方交流群内的群友可直接联系添加</span>
 						</li>
 					</ul>
 				</div>
@@ -128,18 +133,18 @@ const sortedFriends = [...pinnedFriends, ...shuffledNonPinnedFriends];
 		</section>
 
 		<!-- 统计信息 -->
-		<div class="mt-8 grid grid-cols-2 md:grid-cols-3 gap-4">
-			<div class="p-4 bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-950/30 dark:to-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800">
-				<div class="text-3xl font-bold text-blue-600 dark:text-blue-400">{sortedFriends.length}</div>
-				<div class="text-sm text-gray-600 dark:text-gray-400 mt-1">友链总数</div>
+		<div class="mt-8 grid grid-cols-2 md:grid-cols-3 gap-4 overflow-hidden">
+			<div class="p-4 bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-950/30 dark:to-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800 min-w-0">
+				<div class="text-3xl font-bold text-blue-600 dark:text-blue-400 truncate">{sortedFriends.length}</div>
+				<div class="text-sm text-gray-600 dark:text-gray-400 mt-1 truncate">友链总数</div>
 			</div>
-			<div class="p-4 bg-gradient-to-br from-purple-50 to-purple-100 dark:from-purple-950/30 dark:to-purple-900/20 rounded-lg border border-purple-200 dark:border-purple-800">
-				<div class="text-3xl font-bold text-purple-600 dark:text-purple-400">{pinnedFriends.length}</div>
-				<div class="text-sm text-gray-600 dark:text-gray-400 mt-1">置顶友链</div>
+			<div class="p-4 bg-gradient-to-br from-purple-50 to-purple-100 dark:from-purple-950/30 dark:to-purple-900/20 rounded-lg border border-purple-200 dark:border-purple-800 min-w-0">
+				<div class="text-3xl font-bold text-purple-600 dark:text-purple-400 truncate">{pinnedFriends.length}</div>
+				<div class="text-sm text-gray-600 dark:text-gray-400 mt-1 truncate">置顶友链</div>
 			</div>
-			<div class="p-4 bg-gradient-to-br from-pink-50 to-pink-100 dark:from-pink-950/30 dark:to-pink-900/20 rounded-lg border border-pink-200 dark:border-pink-800">
-				<div class="text-3xl font-bold text-pink-600 dark:text-pink-400">{nonPinnedFriends.length}</div>
-				<div class="text-sm text-gray-600 dark:text-gray-400 mt-1">普通友链</div>
+			<div class="p-4 bg-gradient-to-br from-pink-50 to-pink-100 dark:from-pink-950/30 dark:to-pink-900/20 rounded-lg border border-pink-200 dark:border-pink-800 min-w-0">
+				<div class="text-3xl font-bold text-pink-600 dark:text-pink-400 truncate">{nonPinnedFriends.length}</div>
+				<div class="text-sm text-gray-600 dark:text-gray-400 mt-1 truncate">普通友链</div>
 			</div>
 		</div>
 	</div>
