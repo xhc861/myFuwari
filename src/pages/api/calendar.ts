@@ -1,14 +1,14 @@
 import type { APIRoute } from 'astro';
 
-export const GET: APIRoute = async ({ request }) => {
+export const GET: APIRoute = async () => {
   try {
     const now = new Date();
     const year = now.getFullYear();
     const month = String(now.getMonth() + 1).padStart(2, '0');
     const day = String(now.getDate()).padStart(2, '0');
     
-    // 使用 HTTP 协议避免证书问题
-    const url = `http://rili.com.cn/rili/json/today/${year}/${month}${day}`;
+    // 使用 HTTP 协议避免证书问题（服务端请求不受 Mixed Content 限制）
+    const url = `http://rili.com.cn/rili/json/today/${year}/${month}${day}.js`;
     
     const response = await fetch(url);
     const text = await response.text();
@@ -18,6 +18,12 @@ export const GET: APIRoute = async ({ request }) => {
     if (jsonMatch && jsonMatch[1]) {
       const data = JSON.parse(jsonMatch[1]);
       
+      // 提取节日信息
+      let festivalName = '';
+      if (data.jieri && Array.isArray(data.jieri) && data.jieri.length > 0) {
+        festivalName = data.jieri[0].name || '';
+      }
+      
       return new Response(JSON.stringify({
         success: true,
         data: {
@@ -25,7 +31,8 @@ export const GET: APIRoute = async ({ request }) => {
           weekday: data.yangli?.xingqi || '',
           lunar: data.nongli?.yueri || '',
           jieqi: data.jieqi?.jieqi || '',
-          constellation: data.xingzuo?.xingzuo || ''
+          constellation: data.xingzuo?.xingzuo || '',
+          festival: festivalName
         }
       }), {
         status: 200,
@@ -53,7 +60,8 @@ export const GET: APIRoute = async ({ request }) => {
         weekday: weekdays[now.getDay()],
         lunar: '农历数据加载失败',
         jieqi: '',
-        constellation: ''
+        constellation: '',
+        festival: ''
       }
     }), {
       status: 200,

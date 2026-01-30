@@ -13,58 +13,31 @@
   let calendarData: CalendarData | null = null;
   let loading = true;
 
-  function fetchCalendarData() {
-    const now = new Date();
-    const year = now.getFullYear();
-    const month = String(now.getMonth() + 1).padStart(2, '0');
-    const day = String(now.getDate()).padStart(2, '0');
-    
-    // 使用 HTTP 协议的 .js 文件
-    const url = `http://rili.com.cn/rili/json/today/${year}/${month}${day}.js`;
-    
-    // 定义全局回调函数
-    (window as any).jsonrun_Today = (data: any) => {
-      try {
-        // 提取节日信息
-        let festivalName = '';
-        if (data.jieri && Array.isArray(data.jieri) && data.jieri.length > 0) {
-          festivalName = data.jieri[0].name || '';
-        }
-
+  async function fetchCalendarData() {
+    try {
+      // 使用服务端 API 代理请求，避免 Mixed Content 问题
+      const response = await fetch('/api/calendar');
+      const result = await response.json();
+      
+      if (result.success && result.data) {
+        const data = result.data;
         calendarData = {
-          date: data.yangli?.date || `${year}年${month}月${day}日`,
-          weekday: data.yangli?.xingqi || '',
-          lunar: data.nongli?.yueri || '',
-          jieqi: data.jieqi?.jieqi || '',
-          luckyConstellation: data.xingzuo?.xingzuo ? `${data.xingzuo.xingzuo}座` : '',
-          festival: festivalName
+          date: data.date,
+          weekday: data.weekday,
+          lunar: data.lunar,
+          jieqi: data.jieqi,
+          luckyConstellation: data.constellation ? `${data.constellation}座` : '',
+          festival: data.festival || ''
         };
-      } catch (error) {
-        console.error('解析日历数据失败:', error);
+      } else {
         useFallbackData();
-      } finally {
-        loading = false;
       }
-    };
-    
-    // 创建 script 标签加载 JSONP
-    const script = document.createElement('script');
-    script.src = url;
-    
-    script.onerror = () => {
-      console.error('加载日历数据失败');
+    } catch (error) {
+      console.error('加载日历数据失败:', error);
       useFallbackData();
-    };
-    
-    document.head.appendChild(script);
-    
-    // 设置超时保护
-    setTimeout(() => {
-      if (loading) {
-        console.warn('日历数据加载超时');
-        useFallbackData();
-      }
-    }, 5000);
+    } finally {
+      loading = false;
+    }
   }
 
   function useFallbackData() {
