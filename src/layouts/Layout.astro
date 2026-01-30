@@ -6,6 +6,7 @@ import "@fontsource/roboto/700.css";
 import ConfigCarrier from "@components/ConfigCarrier.astro";
 import { profileConfig, siteConfig } from "@/config";
 import Notification from "@components/Notification.svelte"
+import SplashScreen from "@components/SplashScreen.svelte"
 import {
 	AUTO_MODE,
 	BANNER_HEIGHT,
@@ -152,6 +153,7 @@ const bannerOffset =
 	<body class=" min-h-screen transition " class:list={[{"lg:is-home": isHomePage, "enable-banner": enableBanner}]}
 		  data-overlayscrollbars-initialize
 	>
+		<SplashScreen client:only="svelte" />
 		<ConfigCarrier></ConfigCarrier>
 		<slot /><Notification client:only="svelte"></Notification>
 

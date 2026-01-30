@@ -12,17 +12,10 @@ interface Props {
 	class: string;
 }
 
-const { title, pubDate, slug } = Astro.props;
+const { title, pubDate } = Astro.props;
 const className = Astro.props.class;
 const profileConf = profileConfig;
 const licenseConf = licenseConfig;
-
-// Calculate reading time estimate (assuming average reading speed)
-const wordCount = Math.floor(Math.random() * 2000) + 500; // Placeholder - you can calculate actual word count
-const readingTime = Math.ceil(wordCount / 200); // ~200 words per minute
-
-// Get current year for copyright
-const currentYear = new Date().getFullYear();
 ---
 <div class={`relative transition overflow-hidden bg-[var(--license-block-bg)] py-5 px-6 ${className}`}>
     <div class="transition font-bold text-black/75 dark:text-white/75 text-lg mb-3">

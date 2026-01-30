@@ -35,4 +35,9 @@ export const id: Translation = {
 	[Key.author]: "Penulis",
 	[Key.publishedAt]: "Diterbitkan pada",
 	[Key.license]: "Lisensi",
+
+	[Key.friends]: "Teman",
+	[Key.friendLink]: "Ajukan Tautan Teman",
+	[Key.friendLinkDescription]: "Selamat datang untuk mengajukan tautan teman. Silakan hubungi saya melalui metode berikut",
+	[Key.friendLinkText]: "Hubungi Saya",
 };

@@ -35,4 +35,9 @@ export const th: Translation = {
 	[Key.author]: "ผู้เขียน",
 	[Key.publishedAt]: "เผยแพร่เมื่อ",
 	[Key.license]: "สัญญาอนุญาต",
+
+	[Key.friends]: "เพื่อน",
+	[Key.friendLink]: "สมัครลิงก์เพื่อน",
+	[Key.friendLinkDescription]: "ยินดีต้อนรับการสมัครลิงก์เพื่อน กรุณาติดต่อฉันผ่านวิธีต่อไปนี้",
+	[Key.friendLinkText]: "ติดต่อฉัน",
 };
