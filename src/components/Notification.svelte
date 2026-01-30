@@ -1,57 +1,67 @@
 <script lang="ts">
-	import { Icon } from 'astro-icon/components';
-	import { onMount } from 'svelte';
+import { Icon } from "astro-icon/components";
+import { onMount } from "svelte";
 
-	interface NotificationItem {
-		id: string;
-		message: string;
-		type: 'success' | 'error' | 'info' | 'warning';
-		duration?: number;
-	}
+interface NotificationItem {
+	id: string;
+	message: string;
+	type: "success" | "error" | "info" | "warning";
+	duration?: number;
+}
 
-	let notifications: NotificationItem[] = [];
-	let nextId = 0;
+let notifications: NotificationItem[] = [];
+let nextId = 0;
 
-	const typeStyles = {
-		success: 'bg-green-100 border-green-300 text-green-800 dark:bg-green-900 dark:border-green-700 dark:text-green-200',
-		error: 'bg-red-100 border-red-300 text-red-800 dark:bg-red-900 dark:border-red-700 dark:text-red-200',
-		info: 'bg-blue-100 border-blue-300 text-blue-800 dark:bg-blue-900 dark:border-blue-700 dark:text-blue-200',
-		warning: 'bg-yellow-100 border-yellow-300 text-yellow-800 dark:bg-yellow-900 dark:border-yellow-700 dark:text-yellow-200'
+const typeStyles = {
+	success:
+		"bg-green-100 border-green-300 text-green-800 dark:bg-green-900 dark:border-green-700 dark:text-green-200",
+	error:
+		"bg-red-100 border-red-300 text-red-800 dark:bg-red-900 dark:border-red-700 dark:text-red-200",
+	info: "bg-blue-100 border-blue-300 text-blue-800 dark:bg-blue-900 dark:border-blue-700 dark:text-blue-200",
+	warning:
+		"bg-yellow-100 border-yellow-300 text-yellow-800 dark:bg-yellow-900 dark:border-yellow-700 dark:text-yellow-200",
+};
+
+const typeIcons = {
+	success: "fa6-solid:check-circle",
+	error: "fa6-solid:circle-xmark",
+	info: "fa6-solid:circle-info",
+	warning: "fa6-solid:triangle-exclamation",
+};
+
+export function showNotification(
+	message: string,
+	type: "success" | "error" | "info" | "warning" = "info",
+	duration = 5000,
+) {
+	const id = `notification-${nextId++}`;
+	const notification: NotificationItem = {
+		id,
+		message,
+		type,
+		duration,
 	};
 
-	const typeIcons = {
-		success: 'fa6-solid:check-circle',
-		error: 'fa6-solid:circle-xmark',
-		info: 'fa6-solid:circle-info',
-		warning: 'fa6-solid:triangle-exclamation'
-	};
+	notifications = [...notifications, notification];
 
-	export function showNotification(message: string, type: 'success' | 'error' | 'info' | 'warning' = 'info', duration: number = 5000) {
-		const id = `notification-${nextId++}`;
-		const notification: NotificationItem = {
-			id,
-			message,
-			type,
-			duration
-		};
-
-		notifications = [...notifications, notification];
-
-		if (duration > 0) {
-			setTimeout(() => {
-				removeNotification(id);
-			}, duration);
-		}
+	if (duration > 0) {
+		setTimeout(() => {
+			removeNotification(id);
+		}, duration);
 	}
+}
 
-	function removeNotification(id: string) {
-		notifications = notifications.filter(n => n.id !== id);
+function removeNotification(id: string) {
+	notifications = notifications.filter((n) => n.id !== id);
+}
+
+onMount(() => {
+	// 将showNotification暴露到全局作用域
+	interface WindowWithNotification extends Window {
+		showNotification: typeof showNotification;
 	}
-
-	onMount(() => {
-		// 将showNotification暴露到全局作用域
-		(window as any).showNotification = showNotification;
-	});
+	(window as WindowWithNotification).showNotification = showNotification;
+});
 </script>
 
 <div class="fixed top-4 right-4 z-[9999] pointer-events-none space-y-3">

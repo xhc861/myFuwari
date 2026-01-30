@@ -6,9 +6,20 @@ import MainGridLayout from "@layouts/MainGridLayout.astro";
 import { getSortedPostsList } from "../utils/content-utils";
 
 const sortedPostsList = await getSortedPostsList();
+
+// Convert posts to match ArchivePanel's expected type
+const postsForArchive = sortedPostsList.map((post) => ({
+	slug: post.slug,
+	data: {
+		title: post.data.title,
+		tags: post.data.tags,
+		category: post.data.category ?? undefined,
+		published: post.data.published,
+	},
+}));
 ---
 
 <MainGridLayout title={i18n(I18nKey.archive)}>
-    <ArchivePanel tags={[]} categories={[]} sortedPosts={sortedPostsList as any} client:only="svelte"></ArchivePanel>
+    <ArchivePanel tags={[]} categories={[]} sortedPosts={postsForArchive} client:only="svelte"></ArchivePanel>
 </MainGridLayout>
 

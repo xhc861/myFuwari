@@ -38,6 +38,7 @@ export const es: Translation = {
 
 	[Key.friends]: "Amigos",
 	[Key.friendLink]: "Solicitar enlace de amigo",
-	[Key.friendLinkDescription]: "Bienvenido a solicitar un enlace de amigo. Por favor contáctame a través de los siguientes métodos",
+	[Key.friendLinkDescription]:
+		"Bienvenido a solicitar un enlace de amigo. Por favor contáctame a través de los siguientes métodos",
 	[Key.friendLinkText]: "Contáctame",
 };

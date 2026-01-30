@@ -6,7 +6,6 @@ import { definePlugin } from "@expressive-code/core";
 export function pluginLanguageBadge() {
 	return definePlugin({
 		name: "Language Badge",
-		// @ts-expect-error - cssVar not used but required by API
 		baseStyles: () => `
       [data-language]::before {
         position: absolute;

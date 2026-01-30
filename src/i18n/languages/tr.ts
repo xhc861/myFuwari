@@ -38,6 +38,7 @@ export const tr: Translation = {
 
 	[Key.friends]: "Arkadaşlar",
 	[Key.friendLink]: "Arkadaş Linki Başvurusu",
-	[Key.friendLinkDescription]: "Arkadaş linki başvurusuna hoş geldiniz. Lütfen aşağıdaki yöntemlerle benimle iletişime geçin",
+	[Key.friendLinkDescription]:
+		"Arkadaş linki başvurusuna hoş geldiniz. Lütfen aşağıdaki yöntemlerle benimle iletişime geçin",
 	[Key.friendLinkText]: "Benimle İletişime Geçin",
 };

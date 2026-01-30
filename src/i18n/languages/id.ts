@@ -38,6 +38,7 @@ export const id: Translation = {
 
 	[Key.friends]: "Teman",
 	[Key.friendLink]: "Ajukan Tautan Teman",
-	[Key.friendLinkDescription]: "Selamat datang untuk mengajukan tautan teman. Silakan hubungi saya melalui metode berikut",
+	[Key.friendLinkDescription]:
+		"Selamat datang untuk mengajukan tautan teman. Silakan hubungi saya melalui metode berikut",
 	[Key.friendLinkText]: "Hubungi Saya",
 };

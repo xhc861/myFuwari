@@ -38,6 +38,7 @@ export const vi: Translation = {
 
 	[Key.friends]: "Bạn bè",
 	[Key.friendLink]: "Đăng ký liên kết bạn bè",
-	[Key.friendLinkDescription]: "Chào mừng đăng ký liên kết bạn bè. Vui lòng liên hệ với tôi qua các phương thức sau",
+	[Key.friendLinkDescription]:
+		"Chào mừng đăng ký liên kết bạn bè. Vui lòng liên hệ với tôi qua các phương thức sau",
 	[Key.friendLinkText]: "Liên hệ với tôi",
 };

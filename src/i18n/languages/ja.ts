@@ -38,6 +38,7 @@ export const ja: Translation = {
 
 	[Key.friends]: "友達",
 	[Key.friendLink]: "友達リンクを申請",
-	[Key.friendLinkDescription]: "友達リンクの申請を歓迎します。以下の方法でご連絡ください",
+	[Key.friendLinkDescription]:
+		"友達リンクの申請を歓迎します。以下の方法でご連絡ください",
 	[Key.friendLinkText]: "お問い合わせ",
 };

@@ -1,32 +1,32 @@
 <script lang="ts">
-  import { onMount } from 'svelte';
-  
-  let show = true;
-  let animationPhase: 'enter' | 'exit' = 'enter';
-  
-  onMount(() => {
-    // Check if this is a fresh page load (not a navigation)
-    const hasVisited = sessionStorage.getItem('hasVisited');
-    
-    if (hasVisited) {
-      // Already visited in this session, don't show splash
-      show = false;
-      return;
-    }
-    
-    // Mark as visited for this session
-    sessionStorage.setItem('hasVisited', 'true');
-    
-    // Start exit animation after 2 seconds
-    setTimeout(() => {
-      animationPhase = 'exit';
-      
-      // Remove splash screen after animation completes
-      setTimeout(() => {
-        show = false;
-      }, 800);
-    }, 2000);
-  });
+import { onMount } from "svelte";
+
+let show = true;
+let animationPhase: "enter" | "exit" = "enter";
+
+onMount(() => {
+	// Check if this is a fresh page load (not a navigation)
+	const hasVisited = sessionStorage.getItem("hasVisited");
+
+	if (hasVisited) {
+		// Already visited in this session, don't show splash
+		show = false;
+		return;
+	}
+
+	// Mark as visited for this session
+	sessionStorage.setItem("hasVisited", "true");
+
+	// Start exit animation after 2 seconds
+	setTimeout(() => {
+		animationPhase = "exit";
+
+		// Remove splash screen after animation completes
+		setTimeout(() => {
+			show = false;
+		}, 800);
+	}, 2000);
+});
 </script>
 
 {#if show}
