@@ -5,21 +5,23 @@ import { url } from "../utils/url-utils";
 const currentYear = new Date().getFullYear();
 const launchDate = new Date("2026-01-02");
 const today = new Date();
-const daysRunning = Math.floor((today - launchDate) / (1000 * 60 * 60 * 24));
+const daysRunning = Math.floor(
+	(today.getTime() - launchDate.getTime()) / (1000 * 60 * 60 * 24),
+);
 
 let dailyQuote = "愿你眼中总有光芒，活成你想要的模样。";
 
 // 尝试从每日一言API获取句子
 try {
-  const res = await fetch("https://v1.hitokoto.cn?c=i&encode=json");
-  if (res.ok) {
-    const data = await res.json();
-    if (data && data.hitokoto) {
-      dailyQuote = `"${data.hitokoto}" — ${data.from || "佚名"}`;
-    }
-  }
+	const res = await fetch("https://v1.hitokoto.cn?c=i&encode=json");
+	if (res.ok) {
+		const data = await res.json();
+		if (data?.hitokoto) {
+			dailyQuote = `"${data.hitokoto}" — ${data.from || "佚名"}`;
+		}
+	}
 } catch (e) {
-  console.warn("每日一言 API 获取失败，使用默认句。");
+	console.warn("每日一言 API 获取失败，使用默认句。");
 }
 ---
 
@@ -27,7 +29,7 @@ try {
 
 <div class="transition border-dashed border-[oklch(85%_0.01_var(--hue))] dark:border-white/15 rounded-2xl mb-12 flex flex-col items-center justify-center px-6 space-y-4 text-center">
     <!-- 每日一言 -->
-    <div id="daily-quote" class="text-sm italic opacity-80">
+    <div id="daily-quote" class="text-sm italic text-gray-600 dark:text-gray-400">
         {dailyQuote}
     </div>
 
@@ -56,10 +58,10 @@ try {
     // 更新运行时间
     const launchDate = new Date("2026-01-02");
     const today = new Date();
-    const daysRunning = Math.floor((today - launchDate) / (1000 * 60 * 60 * 24));
+    const daysRunning = Math.floor((today.getTime() - launchDate.getTime()) / (1000 * 60 * 60 * 24));
     const runDaysElement = document.getElementById('run-days');
     if (runDaysElement) {
-      runDaysElement.textContent = daysRunning;
+      runDaysElement.textContent = String(daysRunning);
     }
 
     // 获取每日一言
@@ -93,10 +95,10 @@ try {
   setInterval(() => {
     const launchDate = new Date("2026-01-02");
     const today = new Date();
-    const daysRunning = Math.floor((today - launchDate) / (1000 * 60 * 60 * 24));
+    const daysRunning = Math.floor((today.getTime() - launchDate.getTime()) / (1000 * 60 * 60 * 24));
     const runDaysElement = document.getElementById('run-days');
     if (runDaysElement) {
-      runDaysElement.textContent = daysRunning;
+      runDaysElement.textContent = String(daysRunning);
     }
   }, 60000); // 每60秒更新一次
 </script>
