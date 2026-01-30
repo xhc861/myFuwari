@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JSON 测试</title>
+</head>
+<body>
+    <h1>JSON 文件测试</h1>
+    <div id="result"></div>
+    
+    <script>
+        async function testJSON() {
+            const files = [
+                '/countdowns.json',
+                '/todos.json',
+                '/exams.json',
+                '/announcement.json',
+                '/micro-news.json'
+            ];
+            
+            const result = document.getElementById('result');
+            
+            for (const file of files) {
+                try {
+                    const response = await fetch(file);
+                    const data = await response.json();
+                    result.innerHTML += `<p>✓ ${file}: ${JSON.stringify(data).substring(0, 100)}...</p>`;
+                    console.log(file, data);
+                } catch (error) {
+                    result.innerHTML += `<p>✗ ${file}: ${error.message}</p>`;
+                    console.error(file, error);
+                }
+            }
+        }
+        
+        testJSON();
+    </script>
+</body>
+</html>

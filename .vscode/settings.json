@@ -19,5 +19,5 @@
     "source.organizeImports.biome": "always"
   },
   "frontMatter.dashboard.openOnStart": false,
-  "kiroAgent.configureMCP": "Disabled"
+  "kiroAgent.configureMCP": "Enabled"
 }

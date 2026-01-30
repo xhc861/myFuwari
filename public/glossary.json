@@ -1,0 +1,44 @@
+{
+  "keywords": {
+    "Typecho": {
+      "title": "Typecho",
+      "description": "一个轻量级的开源博客程序，基于 PHP 构建",
+      "url": "https://typecho.org"
+    },
+    "WordPress": {
+      "title": "WordPress",
+      "description": "全球最流行的内容管理系统和博客平台",
+      "url": "https://wordpress.org"
+    },
+    "博客": {
+      "title": "博客 (Blog)",
+      "description": "一种在线日志形式的网站，用于发布文章、分享想法和经验",
+      "url": "https://zh.wikipedia.org/wiki/网志"
+    },
+    "SiiWay": {
+      "title": "TEAM SiiWay",
+      "description": "SiiWay团队，专注于互联网，笔者团队的身份是创立者",
+      "url": "https://siiway.org"
+    },
+    "Svelte": {
+      "title": "Svelte",
+      "description": "一个编译时框架，将组件编译为高效的原生 JavaScript",
+      "url": "https://svelte.dev"
+    },
+    "GAI": {
+      "title": "GAI(生成式人工智能)",
+      "description": "人工智能的重要分支，能够基于算法和模型生成文本、图片、声音、视频、代码等内容。",
+      "url": "https://baike.baidu.com/item/%E7%94%9F%E6%88%90%E5%BC%8F%E4%BA%BA%E5%B7%A5%E6%99%BA%E8%83%BD/59344747"
+    },
+    "LLM": {
+      "title": "LLM(大语言模型)",
+      "description": "指使用大量文本数据训练的深度学习模型，使得该模型可以生成自然语言文本或理解语言文本的含义。",
+      "url": "https://baike.baidu.com/item/%E5%A4%A7%E8%AF%AD%E8%A8%80%E6%A8%A1%E5%9E%8B/62884793"
+    },
+    "TypeScript": {
+      "title": "TypeScript",
+      "description": "JavaScript 的超集，添加了静态类型检查",
+      "url": "https://www.typescriptlang.org"
+    }
+  }
+}

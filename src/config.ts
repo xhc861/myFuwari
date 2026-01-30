@@ -25,6 +25,18 @@ export const siteConfig: SiteConfig = {
 			url: "", // (Optional) URL link to the original artwork or artist's page
 		},
 	},
+	announcement: {
+		enable: true, // Enable the announcement banner
+		title: "公告", // Title of the announcement (optional)
+		content: "建议使用宽屏设备访问本站，或打开手机横屏模式！", // Content of the announcement
+		icon: "fa6-solid:bullhorn", // Icon for the announcement (optional)
+		closeable: true, // Allow users to close the announcement
+		critical: false, // Set to true for critical announcements (displays in red)
+		// link: {
+		// 	text: "查看详情",
+		// 	url: "/posts/20260103001/",
+		// }, // Optional link in the announcement
+	},
 	toc: {
 		enable: true, // Display the table of contents on the right side of the post
 		depth: 2, // Maximum heading depth to show in the table, from 1 to 3

@@ -2,12 +2,16 @@
 import type { CollectionEntry } from "astro:content";
 import { getPostUrlBySlug } from "@utils/url-utils";
 import PostCard from "./PostCard.astro";
+import AnnouncementWrapper from "./AnnouncementWrapper.astro";
 
 const { page } = Astro.props;
 
 let delay = 0;
 const interval = 50;
 ---
+<!-- 公告组件 - 仅在第一页显示 -->
+{page.currentPage === 1 && <AnnouncementWrapper />}
+
 <div class="transition flex flex-col rounded-[var(--radius-large)] bg-[var(--card-bg)] py-1 md:py-0 md:bg-transparent md:gap-4 mb-4">
     {page.data.map((entry: CollectionEntry<"posts">) => (
         <PostCard

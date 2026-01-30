@@ -30,6 +30,18 @@ export type SiteConfig = {
 			url?: string;
 		};
 	};
+	announcement: {
+		enable: boolean;
+		title?: string;
+		content: string;
+		icon?: string;
+		closeable?: boolean;
+		critical?: boolean;
+		link?: {
+			text: string;
+			url: string;
+		};
+	};
 	toc: {
 		enable: boolean;
 		depth: 1 | 2 | 3;

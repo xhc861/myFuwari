@@ -1,5 +1,5 @@
 <script lang="ts">
-import { Icon } from "astro-icon/components";
+import Icon from "@iconify/svelte";
 import { onMount } from "svelte";
 
 interface NotificationItem {
@@ -9,7 +9,7 @@ interface NotificationItem {
 	duration?: number;
 }
 
-let notifications: NotificationItem[] = [];
+let notifications = $state<NotificationItem[]>([]);
 let nextId = 0;
 
 const typeStyles = {
@@ -70,16 +70,16 @@ onMount(() => {
 			class="pointer-events-auto animate-in fade-in slide-in-from-right-4 duration-300 flex items-start gap-3 p-4 rounded-lg border-l-4 shadow-lg {typeStyles[notification.type]}"
 			role="alert"
 		>
-			<Icon name={typeIcons[notification.type]} class="text-xl flex-shrink-0 mt-0.5" />
+			<Icon icon={typeIcons[notification.type]} class="text-xl flex-shrink-0 mt-0.5" />
 			<div class="flex-1">
 				<p class="text-sm font-medium">{notification.message}</p>
 			</div>
 			<button
-				on:click={() => removeNotification(notification.id)}
+				onclick={() => removeNotification(notification.id)}
 				class="flex-shrink-0 text-lg hover:opacity-70 transition-opacity"
 				aria-label="关闭通知"
 			>
-				<Icon name="fa6-solid:xmark" />
+				<Icon icon="fa6-solid:xmark" />
 			</button>
 		</div>
 	{/each}

@@ -1,8 +1,8 @@
 ---
-import MainGridLayout from "@layouts/MainGridLayout.astro";
+import DashboardLayout from "@layouts/DashboardLayout.astro";
 import DashboardPanel from "@components/dashboard/DashboardPanel.svelte";
 ---
 
-<MainGridLayout title="展板">
+<DashboardLayout title="展板">
     <DashboardPanel client:only="svelte" />
-</MainGridLayout>
+</DashboardLayout>
