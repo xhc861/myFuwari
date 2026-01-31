@@ -76,7 +76,7 @@
                         <span>{latestNews.sender}</span>
                     </div>
                     <a 
-                        href="/dashboard/"
+                        href="/gallery/"
                         class="micro-news-link inline-flex items-center gap-1 text-sm md:text-base transition-colors font-medium"
                     >
                         查看所有微新闻
