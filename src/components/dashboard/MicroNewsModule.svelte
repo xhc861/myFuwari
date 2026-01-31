@@ -54,11 +54,14 @@
     currentPage = 1;
   }
 
-  // 从 JSON 文件加载数据
-  onMount(async () => {
+  // 从 JSON 文件动态加载微新闻数据
+  async function loadMicroNews() {
+    console.log('[MicroNewsModule] 开始加载微新闻数据...');
     try {
       const response = await fetch('/micro-news.json');
+      console.log('[MicroNewsModule] fetch 响应:', response.status);
       const data = await response.json();
+      console.log('[MicroNewsModule] 加载的数据:', data);
       // 按 ID 倒序排列（最新的在前面），并添加默认值
       allNews = data.map((item: any) => ({
         ...item,
@@ -66,8 +69,22 @@
         time: item.time || ''
       })).sort((a: MicroNews, b: MicroNews) => Number(b.id) - Number(a.id));
       displayNews = allNews.slice(0, 3);
+      console.log('[MicroNewsModule] 微新闻数据加载成功，共', allNews.length, '条');
     } catch (error) {
-      console.error('Failed to load micro news:', error);
+      console.error('[MicroNewsModule] 加载失败:', error);
+      allNews = [];
+      displayNews = [];
+    }
+  }
+
+  onMount(() => {
+    console.log('[MicroNewsModule] onMount 被调用');
+    // 确保在客户端执行
+    if (typeof window !== 'undefined') {
+      console.log('[MicroNewsModule] 在客户端环境，开始加载数据');
+      loadMicroNews();
+    } else {
+      console.log('[MicroNewsModule] 不在客户端环境');
     }
   });
 
