@@ -59,8 +59,12 @@
     try {
       const response = await fetch('/micro-news.json');
       const data = await response.json();
-      // 按 ID 倒序排列（最新的在前面）
-      allNews = data.sort((a: MicroNews, b: MicroNews) => Number(b.id) - Number(a.id));
+      // 按 ID 倒序排列（最新的在前面），并添加默认值
+      allNews = data.map((item: any) => ({
+        ...item,
+        priority: item.priority || 'medium',
+        time: item.time || ''
+      })).sort((a: MicroNews, b: MicroNews) => Number(b.id) - Number(a.id));
       displayNews = allNews.slice(0, 3);
     } catch (error) {
       console.error('Failed to load micro news:', error);
