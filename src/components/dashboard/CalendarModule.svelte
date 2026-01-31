@@ -18,7 +18,7 @@
     const year = now.getFullYear();
     const month = String(now.getMonth() + 1).padStart(2, '0');
     const day = String(now.getDate()).padStart(2, '0');
-    const url = `https://rili.com.cn/rili/json/today/${year}/${month}${day}.js`;
+    const url = `https://m.rili.com.cn/rili/json/today/${year}/${month}${day}.js`;
     
     // 定义全局回调函数
     (window as any).jsonrun_Today = (data: any) => {
