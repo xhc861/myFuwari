@@ -68,7 +68,7 @@
                         Micro News
                     </h3>
                     <p class="micro-news-message text-sm md:text-base leading-relaxed mb-2">
-                        {latestNews.content}
+                        {latestNews.title}
                     </p>
                     <div class="micro-news-meta text-xs md:text-sm opacity-70 mb-3">
                         <span>{getRelativeTime(latestNews.date)}</span>
@@ -76,7 +76,7 @@
                         <span>{latestNews.sender}</span>
                     </div>
                     <a 
-                        href="/gallery/#micro-news"
+                        href="/dashboard/"
                         class="micro-news-link inline-flex items-center gap-1 text-sm md:text-base transition-colors font-medium"
                     >
                         查看所有微新闻
