@@ -1,5 +1,6 @@
 ---
 import ArchivePanel from "@components/ArchivePanel.svelte";
+import MicroNewsAnnouncement from "@components/MicroNewsAnnouncement.svelte";
 import I18nKey from "@i18n/i18nKey";
 import { i18n } from "@i18n/translation";
 import MainGridLayout from "@layouts/MainGridLayout.astro";
@@ -20,6 +21,7 @@ const postsForArchive = sortedPostsList.map((post) => ({
 ---
 
 <MainGridLayout title={i18n(I18nKey.archive)}>
+    <MicroNewsAnnouncement client:load />
     <ArchivePanel tags={[]} categories={[]} sortedPosts={postsForArchive} client:only="svelte"></ArchivePanel>
 </MainGridLayout>
 
