@@ -56,9 +56,6 @@
 
   // 从 JSON 文件加载数据
   onMount(async () => {
-    // 确保在客户端执行
-    if (typeof window === 'undefined') return;
-    
     try {
       const response = await fetch('/micro-news.json');
       const data = await response.json();
