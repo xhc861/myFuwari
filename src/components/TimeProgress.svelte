@@ -17,7 +17,7 @@
     const dayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate());
     const dayElapsed = now.getTime() - dayStart.getTime();
     const dayTotal = 24 * 60 * 60 * 1000;
-    const dayPercentage = (dayElapsed / dayTotal) * 100;
+    const dayPercentage = Math.min((dayElapsed / dayTotal) * 100, 100);
     const hoursElapsed = Math.floor(dayElapsed / (60 * 60 * 1000));
     
     // 这周已经过去
@@ -25,22 +25,24 @@
     const weekStart = new Date(now.getFullYear(), now.getMonth(), now.getDate() - weekDay + 1);
     const weekElapsed = now.getTime() - weekStart.getTime();
     const weekTotal = 7 * 24 * 60 * 60 * 1000;
-    const weekPercentage = (weekElapsed / weekTotal) * 100;
+    const weekPercentage = Math.min((weekElapsed / weekTotal) * 100, 100);
     const daysElapsed = Math.floor(weekElapsed / (24 * 60 * 60 * 1000));
     
     // 本月已经过去
     const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
+    monthStart.setHours(0, 0, 0, 0); // 确保从月初 00:00:00 开始
     const monthEnd = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+    monthEnd.setHours(23, 59, 59, 999); // 确保到月末 23:59:59 结束
     const monthElapsed = now.getTime() - monthStart.getTime();
     const monthTotal = monthEnd.getTime() - monthStart.getTime();
-    const monthPercentage = (monthElapsed / monthTotal) * 100;
-    const monthDaysElapsed = now.getDate();
+    const monthPercentage = Math.min((monthElapsed / monthTotal) * 100, 100); // 确保不超过100%
+    const monthDaysElapsed = now.getDate(); // 显示当前日期
     
     // 今年已经过去
     const yearStart = new Date(now.getFullYear(), 0, 1);
     const yearElapsed = now.getTime() - yearStart.getTime();
     const yearTotal = new Date(now.getFullYear() + 1, 0, 1).getTime() - yearStart.getTime();
-    const yearPercentage = (yearElapsed / yearTotal) * 100;
+    const yearPercentage = Math.min((yearElapsed / yearTotal) * 100, 100);
     const monthsElapsed = now.getMonth() + 1;
     
     progressData = [
