@@ -1,150 +1,149 @@
 <script lang="ts">
-  import { onMount } from 'svelte';
-  import { fade, scale } from 'svelte/transition';
+import { onMount } from "svelte";
+import { fade, scale } from "svelte/transition";
 
-  interface MicroNews {
-    id: string;
-    title: string;
-    content: string;
-    time: string;
-    date: string;
-    sender: string;
-    priority: 'high' | 'medium' | 'low' | 'doing';
-  }
+interface MicroNews {
+	id: string;
+	title: string;
+	content: string;
+	time: string;
+	date: string;
+	sender: string;
+	priority: "high" | "medium" | "low" | "doing";
+}
 
-  let allNews: MicroNews[] = [];
-  let displayNews: MicroNews[] = [];
-  let showModal = false;
-  
-  // 筛选和分页状态
-  let selectedSender = 'all';
-  let selectedPriority = 'all';
-  let selectedDateRange = 'all';
-  let currentPage = 1;
-  let itemsPerPage = 6;
-  
-  // 获取唯一的发送者列表
-  $: senders = ['all', ...new Set(allNews.map(n => n.sender))];
-  
-  // 筛选后的新闻
-  $: filteredNews = allNews.filter(news => {
-    const senderMatch = selectedSender === 'all' || news.sender === selectedSender;
-    const priorityMatch = selectedPriority === 'all' || news.priority === selectedPriority;
-    
-    let dateMatch = true;
-    if (selectedDateRange !== 'all') {
-      const newsDate = new Date(news.date);
-      const today = new Date();
-      const diffDays = Math.floor((today.getTime() - newsDate.getTime()) / (1000 * 60 * 60 * 24));
-      
-      if (selectedDateRange === 'today') dateMatch = diffDays === 0;
-      else if (selectedDateRange === 'week') dateMatch = diffDays <= 7;
-      else if (selectedDateRange === 'month') dateMatch = diffDays <= 30;
-    }
-    
-    return senderMatch && priorityMatch && dateMatch;
-  });
-  
-  // 分页计算
-  $: totalPages = Math.ceil(filteredNews.length / itemsPerPage);
-  $: paginatedNews = filteredNews.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
-  
-  // 重置页码当筛选条件改变
-  $: if (selectedSender || selectedPriority || selectedDateRange) {
-    currentPage = 1;
-  }
+let allNews: MicroNews[] = [];
+let displayNews: MicroNews[] = [];
+let showModal = false;
 
-  // 从 JSON 文件动态加载微新闻数据
-  async function loadMicroNews() {
-    console.log('[MicroNewsModule] 开始加载微新闻数据...');
-    try {
-      const response = await fetch('/micro-news.json');
-      console.log('[MicroNewsModule] fetch 响应:', response.status);
-      const data = await response.json();
-      console.log('[MicroNewsModule] 加载的数据:', data);
-      // 按 ID 倒序排列（最新的在前面），并添加默认值
-      allNews = data.map((item: any) => ({
-        ...item,
-        priority: item.priority || 'medium',
-        time: item.time || ''
-      })).sort((a: MicroNews, b: MicroNews) => Number(b.id) - Number(a.id));
-      displayNews = allNews.slice(0, 3);
-      console.log('[MicroNewsModule] 微新闻数据加载成功，共', allNews.length, '条');
-    } catch (error) {
-      console.error('[MicroNewsModule] 加载失败:', error);
-      allNews = [];
-      displayNews = [];
-    }
-  }
+// 筛选和分页状态
+let selectedSender = "all";
+let selectedPriority = "all";
+let selectedDateRange = "all";
+let currentPage = 1;
+let itemsPerPage = 6;
 
-  onMount(() => {
-    console.log('[MicroNewsModule] onMount 被调用');
-    // 确保在客户端执行
-    if (typeof window !== 'undefined') {
-      console.log('[MicroNewsModule] 在客户端环境，开始加载数据');
-      loadMicroNews();
-    } else {
-      console.log('[MicroNewsModule] 不在客户端环境');
-    }
-  });
+// 获取唯一的发送者列表
+$: senders = ["all", ...new Set(allNews.map((n) => n.sender))];
 
-  function openModal() {
-    showModal = true;
-  }
+// 筛选后的新闻
+$: filteredNews = allNews.filter((news) => {
+	const senderMatch =
+		selectedSender === "all" || news.sender === selectedSender;
+	const priorityMatch =
+		selectedPriority === "all" || news.priority === selectedPriority;
 
-  function closeModal() {
-    showModal = false;
-    // 重置筛选条件
-    selectedSender = 'all';
-    selectedPriority = 'all';
-    selectedDateRange = 'all';
-    currentPage = 1;
-  }
+	let dateMatch = true;
+	if (selectedDateRange !== "all") {
+		const newsDate = new Date(news.date);
+		const today = new Date();
+		const diffDays = Math.floor(
+			(today.getTime() - newsDate.getTime()) / (1000 * 60 * 60 * 24),
+		);
 
-  function handleKeydown(event: KeyboardEvent) {
-    if (event.key === 'Escape' && showModal) {
-      closeModal();
-    }
-  }
-  
-  function getPriorityLabel(priority: 'high' | 'medium' | 'low' | 'doing'): string {
-    const labels: Record<'high' | 'medium' | 'low' | 'doing', string> = { 
-      high: '重要', 
-      medium: '一般', 
-      low: '普通',
-      doing: '正在做'
-    };
-    return labels[priority];
-  }
-  
-  function getPriorityClass(priority: string): string {
-    return `priority-${priority}`;
-  }
-  
-  function getRelativeTime(dateStr: string): string {
-    const date = new Date(dateStr);
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    date.setHours(0, 0, 0, 0);
-    
-    const diffTime = today.getTime() - date.getTime();
-    const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
-    
-    if (diffDays === 0) return '今天';
-    if (diffDays === 1) return '昨天';
-    if (diffDays === 2) return '前天';
-    if (diffDays < 7) return `${diffDays}天前`;
-    if (diffDays < 30) {
-      const weeks = Math.floor(diffDays / 7);
-      return `${weeks}周前`;
-    }
-    if (diffDays < 365) {
-      const months = Math.floor(diffDays / 30);
-      return `${months}个月前`;
-    }
-    const years = Math.floor(diffDays / 365);
-    return `${years}年前`;
-  }
+		if (selectedDateRange === "today") dateMatch = diffDays === 0;
+		else if (selectedDateRange === "week") dateMatch = diffDays <= 7;
+		else if (selectedDateRange === "month") dateMatch = diffDays <= 30;
+	}
+
+	return senderMatch && priorityMatch && dateMatch;
+});
+
+// 分页计算
+$: totalPages = Math.ceil(filteredNews.length / itemsPerPage);
+$: paginatedNews = filteredNews.slice(
+	(currentPage - 1) * itemsPerPage,
+	currentPage * itemsPerPage,
+);
+
+// 重置页码当筛选条件改变
+$: if (selectedSender || selectedPriority || selectedDateRange) {
+	currentPage = 1;
+}
+
+// 从 JSON 文件动态加载微新闻数据
+async function loadMicroNews() {
+	console.log("[MicroNewsModule] 开始加载微新闻数据...");
+	try {
+		const response = await fetch("/micro-news.json");
+		console.log("[MicroNewsModule] fetch 响应:", response.status);
+		const data = await response.json();
+		console.log("[MicroNewsModule] 加载的数据:", data);
+		// 按 ID 倒序排列（最新的在前面），并添加默认值
+		allNews = data
+			.map((item: any) => ({
+				...item,
+				priority: item.priority || "medium",
+				time: item.time || "",
+			}))
+			.sort((a: MicroNews, b: MicroNews) => Number(b.id) - Number(a.id));
+		displayNews = allNews.slice(0, 3);
+		console.log(
+			"[MicroNewsModule] 微新闻数据加载成功，共",
+			allNews.length,
+			"条",
+		);
+	} catch (error) {
+		console.error("[MicroNewsModule] 加载失败:", error);
+		allNews = [];
+		displayNews = [];
+	}
+}
+
+onMount(() => {
+	console.log("[MicroNewsModule] onMount 被调用");
+	// 确保在客户端执行
+	if (typeof window !== "undefined") {
+		console.log("[MicroNewsModule] 在客户端环境，开始加载数据");
+		loadMicroNews();
+	} else {
+		console.log("[MicroNewsModule] 不在客户端环境");
+	}
+});
+
+function openModal() {
+	showModal = true;
+}
+
+function closeModal() {
+	showModal = false;
+	// 重置筛选条件
+	selectedSender = "all";
+	selectedPriority = "all";
+	selectedDateRange = "all";
+	currentPage = 1;
+}
+
+function handleKeydown(event: KeyboardEvent) {
+	if (event.key === "Escape" && showModal) {
+		closeModal();
+	}
+}
+
+function getPriorityLabel(
+	priority: "high" | "medium" | "low" | "doing",
+): string {
+	const labels: Record<"high" | "medium" | "low" | "doing", string> = {
+		high: "重要",
+		medium: "一般",
+		low: "普通",
+		doing: "正在做",
+	};
+	return labels[priority];
+}
+
+function getPriorityClass(priority: string): string {
+	return `priority-${priority}`;
+}
+
+function formatDateTime(dateStr: string, timeStr?: string): string {
+	// 如果有时间，返回完整的日期时间
+	if (timeStr) {
+		return `${dateStr} ${timeStr}`;
+	}
+	// 只有日期
+	return dateStr;
+}
 </script>
 
 <svelte:window on:keydown={handleKeydown} />
@@ -162,7 +161,7 @@
         </div>
         <div class="news-content">{news.content}</div>
         <div class="news-meta">
-          <span class="news-time">{getRelativeTime(news.date)}</span>
+          <span class="news-time">{formatDateTime(news.date, news.time)}</span>
           <span class="news-sender">{news.sender}</span>
         </div>
       </div>
@@ -246,7 +245,7 @@
                 </div>
                 <div class="news-content">{news.content}</div>
                 <div class="news-meta">
-                  <span class="news-time">{getRelativeTime(news.date)}</span>
+                  <span class="news-time">{formatDateTime(news.date, news.time)}</span>
                   <span class="news-sender">{news.sender}</span>
                 </div>
               </div>
