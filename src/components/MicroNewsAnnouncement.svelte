@@ -1,62 +1,46 @@
 <script lang="ts">
-    import Icon from '@iconify/svelte';
-    import { onMount } from 'svelte';
+import Icon from "@iconify/svelte";
+import { onMount } from "svelte";
 
-    interface MicroNews {
-        id: string;
-        title: string;
-        content: string;
-        time?: string;
-        date: string;
-        sender: string;
-        priority?: 'high' | 'medium' | 'low' | 'doing';
-    }
+interface MicroNews {
+	id: string;
+	title: string;
+	content: string;
+	time?: string;
+	date: string;
+	sender: string;
+	priority?: "high" | "medium" | "low" | "doing";
+}
 
-    let latestNews: MicroNews | null = $state(null);
-    let visible = $state(true);
-    
-    function getRelativeTime(dateStr: string): string {
-        const date = new Date(dateStr);
-        const today = new Date();
-        today.setHours(0, 0, 0, 0);
-        date.setHours(0, 0, 0, 0);
-        
-        const diffTime = today.getTime() - date.getTime();
-        const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
-        
-        if (diffDays === 0) return '今天';
-        if (diffDays === 1) return '昨天';
-        if (diffDays === 2) return '前天';
-        if (diffDays < 7) return `${diffDays}天前`;
-        if (diffDays < 30) {
-            const weeks = Math.floor(diffDays / 7);
-            return `${weeks}周前`;
-        }
-        if (diffDays < 365) {
-            const months = Math.floor(diffDays / 30);
-            return `${months}个月前`;
-        }
-        const years = Math.floor(diffDays / 365);
-        return `${years}年前`;
-    }
+let latestNews: MicroNews | null = $state(null);
+let visible = $state(true);
 
-    onMount(async () => {
-        try {
-            const response = await fetch('/micro-news.json');
-            const data: MicroNews[] = await response.json();
-            
-            if (data && data.length > 0) {
-                // 按 ID 倒序排列，获取最新的一条
-                const sortedData = data.sort((a, b) => Number(b.id) - Number(a.id));
-                latestNews = sortedData[0];
-            } else {
-                visible = false;
-            }
-        } catch (error) {
-            console.error('Failed to load micro news:', error);
-            visible = false;
-        }
-    });
+function formatDateTime(dateStr: string, timeStr?: string): string {
+	// 如果有时间，返回完整的日期时间
+	if (timeStr) {
+		return `${dateStr} ${timeStr}`;
+	}
+	// 只有日期
+	return dateStr;
+}
+
+onMount(async () => {
+	try {
+		const response = await fetch("/micro-news.json");
+		const data: MicroNews[] = await response.json();
+
+		if (data && data.length > 0) {
+			// 按 ID 倒序排列，获取最新的一条
+			const sortedData = data.sort((a, b) => Number(b.id) - Number(a.id));
+			latestNews = sortedData[0];
+		} else {
+			visible = false;
+		}
+	} catch (error) {
+		console.error("Failed to load micro news:", error);
+		visible = false;
+	}
+});
 </script>
 
 {#if visible && latestNews}
@@ -71,7 +55,7 @@
                         {latestNews.title}
                     </p>
                     <div class="micro-news-meta text-xs md:text-sm opacity-70 mb-3">
-                        <span>{getRelativeTime(latestNews.date)}</span>
+                        <span>{formatDateTime(latestNews.date, latestNews.time)}</span>
                         <span class="mx-2">·</span>
                         <span>{latestNews.sender}</span>
                     </div>
