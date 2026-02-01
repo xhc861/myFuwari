@@ -2,8 +2,10 @@
     import Icon from '@iconify/svelte';
     import { onMount } from 'svelte';
 
-    // 空的 props 接口，用于 Astro 类型检查
-    interface Props {}
+    // Props 接口，用于 Astro 类型检查
+    interface Props {
+        'client:load'?: boolean;
+    }
 
     interface AnnouncementConfig {
         enable: boolean;
@@ -98,7 +100,7 @@
 
                 {#if config.closeable}
                     <button
-                        onclick={closeAnnouncement}
+                        on:click={closeAnnouncement}
                         class="announcement-close flex-shrink-0 p-1 rounded-lg hover:bg-[var(--btn-plain-bg-hover)] transition-colors"
                         class:critical-text={config.critical}
                         class:normal-text={!config.critical}

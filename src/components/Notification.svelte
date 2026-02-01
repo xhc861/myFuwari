@@ -2,6 +2,11 @@
 import Icon from "@iconify/svelte";
 import { onMount } from "svelte";
 
+// Props 接口，用于 Astro 类型检查
+interface Props {
+	'client:only'?: string;
+}
+
 interface NotificationItem {
 	id: string;
 	message: string;
@@ -52,7 +57,7 @@ export function showNotification(
 }
 
 function removeNotification(id: string) {
-	notifications = notifications.filter((n) => n.id !== id);
+	notifications = notifications.filter((n: NotificationItem) => n.id !== id);
 }
 
 onMount(() => {
@@ -75,7 +80,7 @@ onMount(() => {
 				<p class="text-sm font-medium">{notification.message}</p>
 			</div>
 			<button
-				onclick={() => removeNotification(notification.id)}
+				on:click={() => removeNotification(notification.id)}
 				class="flex-shrink-0 text-lg hover:opacity-70 transition-opacity"
 				aria-label="关闭通知"
 			>

@@ -11,17 +11,26 @@ const daysRunning = Math.floor(
 
 let dailyQuote = "愿你眼中总有光芒，活成你想要的模样。";
 
-// 尝试从每日一言API获取句子
-try {
-	const res = await fetch("https://v1.hitokoto.cn?c=i&encode=json");
-	if (res.ok) {
-		const data = await res.json();
-		if (data?.hitokoto) {
-			dailyQuote = `"${data.hitokoto}" — ${data.from || "佚名"}`;
+// 尝试从每日一言API获取句子（仅在生产环境）
+if (import.meta.env.PROD) {
+	try {
+		const controller = new AbortController();
+		const timeoutId = setTimeout(() => controller.abort(), 3000); // 3秒超时
+		
+		const res = await fetch("https://v1.hitokoto.cn?c=i&encode=json", {
+			signal: controller.signal
+		});
+		clearTimeout(timeoutId);
+		
+		if (res.ok) {
+			const data = await res.json();
+			if (data?.hitokoto) {
+				dailyQuote = `"${data.hitokoto}" — ${data.from || "佚名"}`;
+			}
 		}
+	} catch (e) {
+		// 构建时 API 调用失败是正常的，客户端会重新获取
 	}
-} catch (e) {
-	console.warn("每日一言 API 获取失败，使用默认句。");
 }
 ---
 
@@ -68,24 +77,41 @@ try {
       runDaysElement.textContent = String(daysRunning);
     }
 
-    // 获取每日一言
-    fetch("https://v1.hitokoto.cn?c=i&encode=json")
-      .then(res => {
-        if (!res.ok) throw new Error('API request failed');
-        return res.json();
-      })
-      .then(data => {
-        if (data && data.hitokoto) {
-          const dailyQuoteElement = document.getElementById('daily-quote');
-          if (dailyQuoteElement) {
-            dailyQuoteElement.textContent = `"${data.hitokoto}" — ${data.from || "佚名"}`;
+    // 获取每日一言（带超时和重试）
+    const fetchHitokoto = async (retries = 2) => {
+      for (let i = 0; i < retries; i++) {
+        try {
+          const controller = new AbortController();
+          const timeoutId = setTimeout(() => controller.abort(), 5000); // 5秒超时
+          
+          const res = await fetch("https://v1.hitokoto.cn?c=i&encode=json", {
+            signal: controller.signal
+          });
+          clearTimeout(timeoutId);
+          
+          if (!res.ok) throw new Error('API request failed');
+          const data = await res.json();
+          
+          if (data && data.hitokoto) {
+            const dailyQuoteElement = document.getElementById('daily-quote');
+            if (dailyQuoteElement) {
+              dailyQuoteElement.textContent = `"${data.hitokoto}" — ${data.from || "佚名"}`;
+            }
+          }
+          return; // 成功则退出
+        } catch (e) {
+          if (i === retries - 1) {
+            // 最后一次重试失败，保持默认值
+            console.info("每日一言暂时无法获取，显示默认句子");
+          } else {
+            // 等待后重试
+            await new Promise(resolve => setTimeout(resolve, 1000));
           }
         }
-      })
-      .catch(e => {
-        console.warn("每日一言 API 获取失败:", e.message);
-        // 保持使用服务端渲染的默认值
-      });
+      }
+    };
+    
+    fetchHitokoto();
   }
 
   // 页面加载完成后执行

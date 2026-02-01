@@ -3,7 +3,7 @@ import {
 	DARK_MODE,
 	DEFAULT_THEME,
 	LIGHT_MODE,
-} from "@constants/constants.ts";
+} from "@constants/constants";
 import { expressiveCodeConfig } from "@/config";
 import type { LIGHT_DARK_MODE } from "@/types/config";
 
@@ -27,7 +27,7 @@ export function setHue(hue: number): void {
 	r.style.setProperty("--hue", String(hue));
 }
 
-export function applyThemeToDocument(theme: LIGHT_DARK_MODE) {
+export function applyThemeToDocument(theme: LIGHT_DARK_MODE): void {
 	switch (theme) {
 		case LIGHT_MODE:
 			document.documentElement.classList.remove("dark");

@@ -2,6 +2,11 @@
 import Icon from "@iconify/svelte";
 import { onMount } from "svelte";
 
+// Props 接口，用于 Astro 类型检查
+interface Props {
+	'client:load'?: boolean;
+}
+
 interface MicroNews {
 	id: string;
 	title: string;
