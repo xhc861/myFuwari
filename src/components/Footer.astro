@@ -9,36 +9,15 @@ const daysRunning = Math.floor(
 	(today.getTime() - launchDate.getTime()) / (1000 * 60 * 60 * 24),
 );
 
-let dailyQuote = "愿你眼中总有光芒，活成你想要的模样。";
-
-// 尝试从每日一言API获取句子（仅在生产环境）
-if (import.meta.env.PROD) {
-	try {
-		const controller = new AbortController();
-		const timeoutId = setTimeout(() => controller.abort(), 3000); // 3秒超时
-		
-		const res = await fetch("https://v1.hitokoto.cn?c=i&encode=json", {
-			signal: controller.signal
-		});
-		clearTimeout(timeoutId);
-		
-		if (res.ok) {
-			const data = await res.json();
-			if (data?.hitokoto) {
-				dailyQuote = `"${data.hitokoto}" — ${data.from || "佚名"}`;
-			}
-		}
-	} catch (e) {
-		// 构建时 API 调用失败是正常的，客户端会重新获取
-	}
-}
+// 默认一言句子
+const dailyQuote = "愿你眼中总有光芒，活成你想要的模样。";
 ---
 
 <div class="transition border-t border-black/10 dark:border-white/15 my-10 border-dashed mx-32"></div>
 
 <div class="transition border-dashed border-[oklch(85%_0.01_var(--hue))] dark:border-white/15 rounded-2xl mb-12 flex flex-col items-center justify-center px-6 space-y-4 text-center">
     <!-- 每日一言 -->
-    <div id="daily-quote" class="text-sm italic text-gray-600 dark:text-gray-400">
+    <div id="daily-quote" class="text-sm italic text-gray-600 dark:text-gray-400" data-default-quote={dailyQuote}>
         {dailyQuote}
     </div>
 
@@ -64,10 +43,43 @@ if (import.meta.env.PROD) {
 </div>
 
 <script>
-  // 客户端脚本 - 动态更新运行时间和诗句
-  // 这个脚本在客户端执行，确保每次访问都能获取最新数据
-  
-  function updateFooter() {
+  // 一言 API 缓存（避免频繁请求）
+  let hitokotoCache: { quote: string; timestamp: number } | null = null;
+  const CACHE_DURATION = 5 * 60 * 1000; // 5分钟缓存
+
+  // 获取每日一言
+  async function fetchHitokoto(): Promise<string | null> {
+    // 检查缓存
+    if (hitokotoCache && Date.now() - hitokotoCache.timestamp < CACHE_DURATION) {
+      return hitokotoCache.quote;
+    }
+
+    try {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 5000);
+      
+      const res = await fetch("https://v1.hitokoto.cn?c=i&encode=json", {
+        signal: controller.signal
+      });
+      clearTimeout(timeoutId);
+      
+      if (!res.ok) throw new Error('API request failed');
+      const data = await res.json();
+      
+      if (data && data.hitokoto) {
+        const quote = `"${data.hitokoto}" — ${data.from || "佚名"}`;
+        // 更新缓存
+        hitokotoCache = { quote, timestamp: Date.now() };
+        return quote;
+      }
+    } catch (e) {
+      console.info("每日一言暂时无法获取");
+    }
+    return null;
+  }
+
+  // 更新页脚信息
+  async function updateFooter() {
     // 更新运行时间
     const launchDate = new Date("2026-01-02");
     const today = new Date();
@@ -77,58 +89,47 @@ if (import.meta.env.PROD) {
       runDaysElement.textContent = String(daysRunning);
     }
 
-    // 获取每日一言（带超时和重试）
-    const fetchHitokoto = async (retries = 2) => {
-      for (let i = 0; i < retries; i++) {
-        try {
-          const controller = new AbortController();
-          const timeoutId = setTimeout(() => controller.abort(), 5000); // 5秒超时
-          
-          const res = await fetch("https://v1.hitokoto.cn?c=i&encode=json", {
-            signal: controller.signal
-          });
-          clearTimeout(timeoutId);
-          
-          if (!res.ok) throw new Error('API request failed');
-          const data = await res.json();
-          
-          if (data && data.hitokoto) {
-            const dailyQuoteElement = document.getElementById('daily-quote');
-            if (dailyQuoteElement) {
-              dailyQuoteElement.textContent = `"${data.hitokoto}" — ${data.from || "佚名"}`;
-            }
-          }
-          return; // 成功则退出
-        } catch (e) {
-          if (i === retries - 1) {
-            // 最后一次重试失败，保持默认值
-            console.info("每日一言暂时无法获取，显示默认句子");
-          } else {
-            // 等待后重试
-            await new Promise(resolve => setTimeout(resolve, 1000));
-          }
+    // 更新一言
+    const dailyQuoteElement = document.getElementById('daily-quote');
+    if (dailyQuoteElement) {
+      const quote = await fetchHitokoto();
+      if (quote) {
+        dailyQuoteElement.textContent = quote;
+      } else {
+        // 使用默认句子
+        const defaultQuote = dailyQuoteElement.getAttribute('data-default-quote');
+        if (defaultQuote) {
+          dailyQuoteElement.textContent = defaultQuote;
         }
       }
-    };
-    
-    fetchHitokoto();
-  }
-
-  // 页面加载完成后执行
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', updateFooter);
-  } else {
-    updateFooter();
-  }
-
-  // 可选：定期刷新运行时间（每分钟更新一次）
-  setInterval(() => {
-    const launchDate = new Date("2026-01-02");
-    const today = new Date();
-    const daysRunning = Math.floor((today.getTime() - launchDate.getTime()) / (1000 * 60 * 60 * 24));
-    const runDaysElement = document.getElementById('run-days');
-    if (runDaysElement) {
-      runDaysElement.textContent = String(daysRunning);
     }
-  }, 60000); // 每60秒更新一次
+  }
+
+  // 初始化
+  function initFooter() {
+    updateFooter();
+    
+    // 定期更新运行时间
+    setInterval(() => {
+      const launchDate = new Date("2026-01-02");
+      const today = new Date();
+      const daysRunning = Math.floor((today.getTime() - launchDate.getTime()) / (1000 * 60 * 60 * 24));
+      const runDaysElement = document.getElementById('run-days');
+      if (runDaysElement) {
+        runDaysElement.textContent = String(daysRunning);
+      }
+    }, 60000);
+  }
+
+  // 页面加载时执行
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initFooter);
+  } else {
+    initFooter();
+  }
+
+  // 监听 Swup 页面切换事件
+  document.addEventListener('swup:page:view', () => {
+    updateFooter();
+  });
 </script>
