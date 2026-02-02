@@ -1,36 +1,94 @@
 <script lang="ts">
+interface SubjectScore {
+	id: string;
+	subject: string;
+	score: number | null;
+	fullScore: number;
+	schoolRank: number | null;
+	districtRank: number | null;
+	cityRank: number | null;
+}
 
-  interface SubjectScore {
-    id: string;
-    subject: string;
-    score: number | null;
-    fullScore: number;
-    schoolRank: number | null;
-    districtRank: number | null;
-    cityRank: number | null;
-  }
+const mockScores: SubjectScore[] = [
+	{
+		id: "1",
+		subject: "语文",
+		score: 121,
+		fullScore: 150,
+		schoolRank: 224,
+		districtRank: 1340,
+		cityRank: 4181,
+	},
+	{
+		id: "2",
+		subject: "数学",
+		score: 140,
+		fullScore: 150,
+		schoolRank: 49,
+		districtRank: 239,
+		cityRank: 991,
+	},
+	{
+		id: "3",
+		subject: "英语",
+		score: 77.5,
+		fullScore: 90,
+		schoolRank: 53,
+		districtRank: 311,
+		cityRank: 1709,
+	},
+	{
+		id: "4",
+		subject: "物理",
+		score: 73,
+		fullScore: 90,
+		schoolRank: 165,
+		districtRank: 731,
+		cityRank: 9204,
+	},
+	{
+		id: "5",
+		subject: "化学",
+		score: 43,
+		fullScore: 60,
+		schoolRank: 311,
+		districtRank: 1471,
+		cityRank: 14030,
+	},
+	{
+		id: "6",
+		subject: "政治",
+		score: 54,
+		fullScore: 70,
+		schoolRank: 244,
+		districtRank: 1476,
+		cityRank: 14257,
+	},
+	{
+		id: "7",
+		subject: "历史",
+		score: 45,
+		fullScore: 60,
+		schoolRank: 132,
+		districtRank: 670,
+		cityRank: 7633,
+	},
+];
 
-  const mockScores: SubjectScore[] = [
-    { id: '1', subject: '语文', score: null, fullScore: 150, schoolRank: null, districtRank: null, cityRank: null },
-    { id: '2', subject: '数学', score: null, fullScore: 150, schoolRank: null, districtRank: null, cityRank: null },
-    { id: '3', subject: '英语', score: null, fullScore: 120, schoolRank: null, districtRank: null, cityRank: null },
-    { id: '4', subject: '物理', score: null, fullScore: 90, schoolRank: null, districtRank: null, cityRank: null },
-    { id: '5', subject: '化学', score: null, fullScore: 60, schoolRank: null, districtRank: null, cityRank: null },
-    { id: '6', subject: '政治', score: null, fullScore: 70, schoolRank: null, districtRank: null, cityRank: null },
-    { id: '7', subject: '历史', score: null, fullScore: 60, schoolRank: null, districtRank: null, cityRank: null }
-  ];
+// 计算总分
+const totalScore = mockScores.reduce((sum, item) => sum + (item.score || 0), 0);
+const totalFullScore = mockScores.reduce(
+	(sum, item) => sum + item.fullScore,
+	0,
+);
+const hasScores = mockScores.some((item) => item.score !== null);
 
-  // 计算总分
-  const totalScore = mockScores.reduce((sum, item) => sum + (item.score || 0), 0);
-  const totalFullScore = mockScores.reduce((sum, item) => sum + item.fullScore, 0);
-  const hasScores = mockScores.some(item => item.score !== null);
-
-  // 总排名
-  const overallRanks = {
-    school: 18,
-    district: 125,
-    city: 678
-  };
+// 总排名
+const overallRanks = {
+	school: 99,
+	district: 509,
+	city: 3512,
+};
 </script>
 
 <div class="scoreboard-module card-base">
@@ -239,7 +297,7 @@
     color: rgba(255, 255, 255, 0.9);
   }
 
-  .col-subject {
+  .table-body .col-subject {
     text-align: left !important;
     padding-left: 0.75rem !important;
   }
