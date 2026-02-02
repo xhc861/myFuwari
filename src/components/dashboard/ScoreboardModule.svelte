@@ -215,6 +215,7 @@ const overallRanks = {
   .total-value {
     font-size: 1.5rem;
     font-weight: 700;
+    color: white;
   }
 
   .total-value .score {
