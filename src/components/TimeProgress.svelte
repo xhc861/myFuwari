@@ -100,12 +100,9 @@
 
 <style>
   .time-progress-container {
-    padding: 1rem;
-    border-radius: var(--radius-large);
     display: flex;
     flex-direction: column;
-    gap: 1rem;
-    margin: 1.5rem 0;
+    gap: 0.75rem;
   }
 
   .progress-item {

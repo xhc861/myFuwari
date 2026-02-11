@@ -1,5 +1,6 @@
 import sitemap from "@astrojs/sitemap";
 import svelte from "@astrojs/svelte";
+import vercel from "@astrojs/vercel";
 import tailwind from "@astrojs/tailwind";
 import { pluginCollapsibleSections } from "@expressive-code/plugin-collapsible-sections";
 import { pluginLineNumbers } from "@expressive-code/plugin-line-numbers";
@@ -29,6 +30,8 @@ export default defineConfig({
 	site: "https://fuwari.vercel.app/",
 	base: "/",
 	trailingSlash: "always",
+	output: "static", // 静态模式，API 路由会自动作为服务端函数
+	adapter: vercel(),
 	integrations: [
 		tailwind({
 			nesting: true,

@@ -149,7 +149,7 @@ function formatDateTime(dateStr: string, timeStr?: string): string {
 <svelte:window on:keydown={handleKeydown} />
 
 <div class="micro-news-module card-base">
-  <h3 class="module-title">Micro News</h3>
+  <h3 class="module-title">Micro News ({allNews.length})</h3>
   <div class="news-list">
     {#each displayNews as news (news.id)}
       <div class="news-item">

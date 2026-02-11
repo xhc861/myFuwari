@@ -20,7 +20,7 @@ export const LinkPresets: { [key in LinkPreset]: NavBarLink } = {
 		url: "/gallery/",
 	},
 	[LinkPreset.friend]: {
-		name: "友链",
+		name: "友链&外站",
 		url: "/friends/",
 	},
 };

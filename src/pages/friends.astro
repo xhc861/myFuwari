@@ -1,6 +1,6 @@
 ---
 import FriendCard from "../components/FriendCard.astro";
-import { friends } from "../friends";
+import { friends, externalSites } from "../friends";
 import I18nKey from "../i18n/i18nKey";
 import { i18n } from "../i18n/translation";
 import MainGridLayout from "../layouts/MainGridLayout.astro";
@@ -48,6 +48,34 @@ const sortedFriends = [...pinnedFriends, ...shuffledNonPinnedFriends];
 				))
 			}
 		</div>
+
+		<!-- 外站部分 -->
+		{externalSites.length > 0 && (
+			<section class="mt-12 pt-8 border-t border-gray-200 dark:border-gray-700">
+				<div class="space-y-4">
+					<h2 class="text-3xl font-bold text-gray-900 dark:text-gray-100">
+						外站推荐
+					</h2>
+					<p class="text-gray-600 dark:text-gray-400">
+						一些有用的外部站点和资源
+					</p>
+				</div>
+
+				<div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6">
+					{
+						externalSites.map((site) => (
+							<FriendCard
+								name={site.name}
+								desc={site.desc}
+								avatar={site.avatar}
+								url={site.url}
+								pin={false}
+							/>
+						))
+					}
+				</div>
+			</section>
+		)}
 
 		<!-- 申请友链部分 -->
 		<section class="mt-12 pt-8 border-t border-gray-200 dark:border-gray-700">
@@ -132,7 +160,7 @@ const sortedFriends = [...pinnedFriends, ...shuffledNonPinnedFriends];
 		</section>
 
 		<!-- 统计信息 -->
-		<div class="mt-8 grid grid-cols-2 md:grid-cols-3 gap-4 overflow-hidden">
+		<div class="mt-8 grid grid-cols-2 md:grid-cols-4 gap-4 overflow-hidden">
 			<div class="p-4 bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-950/30 dark:to-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800 min-w-0">
 				<div class="text-3xl font-bold text-blue-600 dark:text-blue-400 truncate">{sortedFriends.length}</div>
 				<div class="text-sm text-gray-600 dark:text-gray-400 mt-1 truncate">友链总数</div>
@@ -144,6 +172,10 @@ const sortedFriends = [...pinnedFriends, ...shuffledNonPinnedFriends];
 			<div class="p-4 bg-gradient-to-br from-pink-50 to-pink-100 dark:from-pink-950/30 dark:to-pink-900/20 rounded-lg border border-pink-200 dark:border-pink-800 min-w-0">
 				<div class="text-3xl font-bold text-pink-600 dark:text-pink-400 truncate">{nonPinnedFriends.length}</div>
 				<div class="text-sm text-gray-600 dark:text-gray-400 mt-1 truncate">普通友链</div>
+			</div>
+			<div class="p-4 bg-gradient-to-br from-green-50 to-green-100 dark:from-green-950/30 dark:to-green-900/20 rounded-lg border border-green-200 dark:border-green-800 min-w-0">
+				<div class="text-3xl font-bold text-green-600 dark:text-green-400 truncate">{externalSites.length}</div>
+				<div class="text-sm text-gray-600 dark:text-gray-400 mt-1 truncate">外站推荐</div>
 			</div>
 		</div>
 	</div>

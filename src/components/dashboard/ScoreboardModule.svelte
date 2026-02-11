@@ -341,6 +341,10 @@ const overallRanks = {
   .col-score {
     font-size: 0.875rem;
   }
+  
+  :global(.dark) .col-score {
+    color: rgba(255, 255, 255, 0.9);
+  }
 
   .score-value {
     font-weight: 600;
@@ -351,14 +355,29 @@ const overallRanks = {
     margin: 0 0.2rem;
     opacity: 0.5;
   }
+  
+  :global(.dark) .score-divider {
+    color: rgba(255, 255, 255, 0.6);
+    opacity: 1;
+  }
 
   .full-score-value {
     opacity: 0.6;
     font-size: 0.8rem;
   }
+  
+  :global(.dark) .full-score-value {
+    color: rgba(255, 255, 255, 0.7);
+    opacity: 1;
+  }
 
   .unpublished {
     opacity: 0.4;
+  }
+  
+  :global(.dark) .unpublished {
+    color: rgba(255, 255, 255, 0.5);
+    opacity: 1;
   }
 
   .rank-value {

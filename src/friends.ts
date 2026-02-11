@@ -89,3 +89,28 @@ export const friends: {
 		url: "https://blog.shirayukinoa.top/",
 	},
 ];
+
+// 外站链接
+export const externalSites: {
+	name: string;
+	desc: string;
+	avatar: string;
+	url: string;
+	category?: string;
+}[] = [
+	{
+		name: "GitHub",
+		desc: "全球最大的代码托管平台",
+		avatar: "https://github.githubassets.com/favicons/favicon.svg",
+		url: "https://github.com",
+		category: "开发工具",
+	},
+	{
+		name: "Stack Overflow",
+		desc: "程序员问答社区",
+		avatar: "https://cdn.sstatic.net/Sites/stackoverflow/Img/favicon.ico",
+		url: "https://stackoverflow.com",
+		category: "开发工具",
+	},
+	// 可以在这里添加更多外站链接
+];

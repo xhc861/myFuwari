@@ -2,6 +2,7 @@
 import path from "node:path";
 import License from "@components/misc/License.astro";
 import Markdown from "@components/misc/Markdown.astro";
+import AISummary from "@components/AISummary.svelte";
 import I18nKey from "@i18n/i18nKey";
 import { i18n } from "@i18n/translation";
 import MainGridLayout from "@layouts/MainGridLayout.astro";
@@ -12,6 +13,9 @@ import { licenseConfig } from "src/config";
 import ImageWrapper from "../../components/misc/ImageWrapper.astro";
 import PostMetadata from "../../components/PostMeta.astro";
 import KeywordTooltip from "../../components/KeywordTooltip.svelte";
+import PostActions from "../../components/PostActions.svelte";
+import ReadingSettings from "../../components/ReadingSettings.svelte";
+import Comment from "../../components/Comment.astro";
 import { profileConfig, siteConfig } from "../../config";
 import { formatDateToYYYYMMDD } from "../../utils/date-utils";
 
@@ -96,6 +100,15 @@ const jsonLd = {
                 {!entry.data.image && <div class="border-[var(--line-divider)] border-dashed border-b-[1px] mb-5"></div>}
             </div>
 
+            <!-- 文章顶部操作按钮 -->
+            <div class="flex flex-wrap gap-3 items-center mb-6 onload-animation">
+                <PostActions client:load slug={entry.slug} title={entry.data.title} published={entry.data.published} words={remarkPluginFrontmatter.words} minutes={remarkPluginFrontmatter.minutes} />
+                <ReadingSettings client:load />
+            </div>
+
+            <!-- AI 智能总结 -->
+            <AISummary client:load content={entry.body} title={entry.data.title} />
+
             <!-- always show cover as long as it has one -->
 
             {entry.data.image &&
@@ -110,6 +123,12 @@ const jsonLd = {
             <KeywordTooltip client:idle />
 
             {licenseConfig.enable && <License title={entry.data.title} slug={entry.slug} pubDate={entry.data.published} class="mb-6 rounded-xl license-container onload-animation"></License>}
+
+            <!-- 文章底部操作按钮 -->
+            <div class="flex flex-wrap gap-3 items-center mb-6 onload-animation">
+                <PostActions client:load slug={entry.slug} title={entry.data.title} published={entry.data.published} words={remarkPluginFrontmatter.words} minutes={remarkPluginFrontmatter.minutes} />
+                <ReadingSettings client:load />
+            </div>
 
         </div>
     </div>
@@ -135,5 +154,8 @@ const jsonLd = {
             </div>}
         </a>
     </div>
+
+    <!-- 评论区 -->
+    <Comment />
 
 </MainGridLayout>

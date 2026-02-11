@@ -6,6 +6,8 @@ import "@fontsource/roboto/700.css";
 import ConfigCarrier from "@components/ConfigCarrier.astro";
 import Notification from "@components/Notification.svelte";
 import SplashScreen from "@components/SplashScreen.svelte";
+import MusicPlayerWrapper from "@components/MusicPlayerWrapper.astro";
+import SpecialEffects from "@components/SpecialEffects.astro";
 import { profileConfig, siteConfig } from "@/config";
 import {
 	AUTO_MODE,
@@ -148,6 +150,7 @@ const bannerOffset =
 		<slot name="head"></slot>
 
 		<link rel="alternate" type="application/rss+xml" title={profileConfig.name} href={`${Astro.site}rss.xml`}/>
+		<link rel="stylesheet" href="/src/styles/print.css" media="print" />
 
 	</head>
 	<body class=" min-h-screen transition " class:list={[{"lg:is-home": isHomePage, "enable-banner": enableBanner}]}
@@ -156,6 +159,8 @@ const bannerOffset =
 		<SplashScreen client:only="svelte" />
 		<ConfigCarrier></ConfigCarrier>
 		<slot /><Notification client:only="svelte"></Notification>
+		<MusicPlayerWrapper />
+		<SpecialEffects />
 
 		<!-- increase the page height during page transition to prevent the scrolling animation from jumping -->
 		<div id="page-height-extend" class="hidden h-[300vh]"></div>
@@ -278,6 +283,7 @@ function setClickOutsideToClose(panel: string, ignores: string[]) {
 setClickOutsideToClose("display-setting", ["display-setting", "display-settings-switch"])
 setClickOutsideToClose("nav-menu-panel", ["nav-menu-panel", "nav-menu-switch"])
 setClickOutsideToClose("search-panel", ["search-panel", "search-bar", "search-switch"])
+setClickOutsideToClose("settings-panel", ["settings-panel", "effects-settings-switch"])
 
 
 function loadTheme() {
