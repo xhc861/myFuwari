@@ -33,7 +33,7 @@ let newSongSrc = "";
 
 let activeTab: "effects" | "music" | "navbar" = "effects";
 
-const VERSION = "v0.9.2 Alpha TEST2";
+const VERSION = "0.9.3 Quality";
 
 onMount(() => {
 	loadSettings();
