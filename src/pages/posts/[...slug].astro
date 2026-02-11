@@ -1,8 +1,8 @@
 ---
 import path from "node:path";
+import AISummary from "@components/AISummary.svelte";
 import License from "@components/misc/License.astro";
 import Markdown from "@components/misc/Markdown.astro";
-import AISummary from "@components/AISummary.svelte";
 import I18nKey from "@i18n/i18nKey";
 import { i18n } from "@i18n/translation";
 import MainGridLayout from "@layouts/MainGridLayout.astro";
@@ -10,12 +10,12 @@ import { getSortedPosts } from "@utils/content-utils";
 import { getDir, getPostUrlBySlug } from "@utils/url-utils";
 import { Icon } from "astro-icon/components";
 import { licenseConfig } from "src/config";
-import ImageWrapper from "../../components/misc/ImageWrapper.astro";
-import PostMetadata from "../../components/PostMeta.astro";
-import KeywordTooltip from "../../components/KeywordTooltip.svelte";
-import PostActions from "../../components/PostActions.svelte";
-import ReadingSettings from "../../components/ReadingSettings.svelte";
 import Comment from "../../components/Comment.astro";
+import KeywordTooltip from "../../components/KeywordTooltip.svelte";
+import ImageWrapper from "../../components/misc/ImageWrapper.astro";
+import PostActions from "../../components/PostActions.svelte";
+import PostMetadata from "../../components/PostMeta.astro";
+import ReadingSettings from "../../components/ReadingSettings.svelte";
 import { profileConfig, siteConfig } from "../../config";
 import { formatDateToYYYYMMDD } from "../../utils/date-utils";
 

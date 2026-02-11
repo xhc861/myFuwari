@@ -1,176 +1,176 @@
 <script lang="ts">
-  import { onMount, onDestroy } from 'svelte';
-  
-  interface Song {
-    title: string;
-    artist: string;
-    src: string;
-  }
-  
-  export let playlist: Song[] = [];
-  
-  let audio: HTMLAudioElement;
-  let currentIndex = 0;
-  let isPlaying = false;
-  let currentTime = 0;
-  let duration = 0;
-  let volume = 0.7;
-  let isExpanded = false;
-  let isMuted = false;
-  let playMode: 'loop' | 'random' | 'single' = 'loop';
-  
-  $: currentSong = playlist[currentIndex];
-  $: progress = duration > 0 ? (currentTime / duration) * 100 : 0;
-  
-  onMount(() => {
-    if (audio) {
-      audio.volume = volume;
-    }
-    
-    // 从 localStorage 加载自定义播放列表
-    const savedPlaylist = localStorage.getItem('musicPlaylist');
-    if (savedPlaylist) {
-      try {
-        const customPlaylist = JSON.parse(savedPlaylist);
-        if (customPlaylist && customPlaylist.length > 0) {
-          playlist = customPlaylist;
-        }
-      } catch (e) {
-        console.error('Failed to load custom playlist:', e);
-      }
-    }
-    
-    // 监听播放列表更新
-    const handlePlaylistUpdate = () => {
-      const savedPlaylist = localStorage.getItem('musicPlaylist');
-      if (savedPlaylist) {
-        try {
-          const customPlaylist = JSON.parse(savedPlaylist);
-          if (customPlaylist && customPlaylist.length > 0) {
-            playlist = customPlaylist;
-            // 如果当前索引超出范围，重置为 0
-            if (currentIndex >= playlist.length) {
-              currentIndex = 0;
-            }
-          }
-        } catch (e) {
-          console.error('Failed to load custom playlist:', e);
-        }
-      }
-    };
-    
-    window.addEventListener('effectsSettingsChanged', handlePlaylistUpdate);
-    
-    return () => {
-      window.removeEventListener('effectsSettingsChanged', handlePlaylistUpdate);
-    };
-  });
+import { onDestroy, onMount } from "svelte";
 
-  function togglePlay() {
-    if (!audio) return;
-    
-    if (isPlaying) {
-      audio.pause();
-    } else {
-      audio.play();
-    }
-    isPlaying = !isPlaying;
-  }
-  
-  function playNext() {
-    if (playMode === 'random') {
-      currentIndex = Math.floor(Math.random() * playlist.length);
-    } else {
-      currentIndex = (currentIndex + 1) % playlist.length;
-    }
-    setTimeout(() => {
-      if (audio) audio.play();
-    }, 100);
-  }
-  
-  function playPrev() {
-    currentIndex = (currentIndex - 1 + playlist.length) % playlist.length;
-    setTimeout(() => {
-      if (audio) audio.play();
-    }, 100);
-  }
+interface Song {
+	title: string;
+	artist: string;
+	src: string;
+}
 
-  function handleTimeUpdate() {
-    if (audio) {
-      currentTime = audio.currentTime;
-    }
-  }
-  
-  function handleLoadedMetadata() {
-    if (audio) {
-      duration = audio.duration;
-    }
-  }
-  
-  function handleEnded() {
-    if (playMode === 'single') {
-      if (audio) audio.play();
-    } else {
-      playNext();
-    }
-  }
-  
-  function seek(e: MouseEvent) {
-    const progressBar = e.currentTarget as HTMLElement;
-    const rect = progressBar.getBoundingClientRect();
-    const percent = (e.clientX - rect.left) / rect.width;
-    if (audio) {
-      audio.currentTime = percent * duration;
-    }
-  }
+export let playlist: Song[] = [];
 
-  function changeVolume(e: Event) {
-    const target = e.target as HTMLInputElement;
-    volume = parseFloat(target.value);
-    if (audio) {
-      audio.volume = volume;
-      isMuted = volume === 0;
-    }
-  }
-  
-  function toggleMute() {
-    if (audio) {
-      if (isMuted) {
-        audio.volume = volume;
-        isMuted = false;
-      } else {
-        audio.volume = 0;
-        isMuted = true;
-      }
-    }
-  }
-  
-  function cyclePlayMode() {
-    const modes: typeof playMode[] = ['loop', 'random', 'single'];
-    const currentModeIndex = modes.indexOf(playMode);
-    playMode = modes[(currentModeIndex + 1) % modes.length];
-  }
+let audio: HTMLAudioElement;
+let currentIndex = 0;
+let isPlaying = false;
+let currentTime = 0;
+let duration = 0;
+let volume = 0.7;
+let isExpanded = false;
+let isMuted = false;
+let playMode: "loop" | "random" | "single" = "loop";
 
-  function formatTime(seconds: number): string {
-    if (!isFinite(seconds)) return '0:00';
-    const mins = Math.floor(seconds / 60);
-    const secs = Math.floor(seconds % 60);
-    return `${mins}:${secs.toString().padStart(2, '0')}`;
-  }
-  
-  function selectSong(index: number) {
-    currentIndex = index;
-    isPlaying = true;
-    setTimeout(() => {
-      if (audio) audio.play();
-    }, 100);
-  }
-  
-  onDestroy(() => {
-    if (audio) {
-      audio.pause();
-    }
-  });
+$: currentSong = playlist[currentIndex];
+$: progress = duration > 0 ? (currentTime / duration) * 100 : 0;
+
+onMount(() => {
+	if (audio) {
+		audio.volume = volume;
+	}
+
+	// 从 localStorage 加载自定义播放列表
+	const savedPlaylist = localStorage.getItem("musicPlaylist");
+	if (savedPlaylist) {
+		try {
+			const customPlaylist = JSON.parse(savedPlaylist);
+			if (customPlaylist && customPlaylist.length > 0) {
+				playlist = customPlaylist;
+			}
+		} catch (e) {
+			console.error("Failed to load custom playlist:", e);
+		}
+	}
+
+	// 监听播放列表更新
+	const handlePlaylistUpdate = () => {
+		const savedPlaylist = localStorage.getItem("musicPlaylist");
+		if (savedPlaylist) {
+			try {
+				const customPlaylist = JSON.parse(savedPlaylist);
+				if (customPlaylist && customPlaylist.length > 0) {
+					playlist = customPlaylist;
+					// 如果当前索引超出范围，重置为 0
+					if (currentIndex >= playlist.length) {
+						currentIndex = 0;
+					}
+				}
+			} catch (e) {
+				console.error("Failed to load custom playlist:", e);
+			}
+		}
+	};
+
+	window.addEventListener("effectsSettingsChanged", handlePlaylistUpdate);
+
+	return () => {
+		window.removeEventListener("effectsSettingsChanged", handlePlaylistUpdate);
+	};
+});
+
+function togglePlay() {
+	if (!audio) return;
+
+	if (isPlaying) {
+		audio.pause();
+	} else {
+		audio.play();
+	}
+	isPlaying = !isPlaying;
+}
+
+function playNext() {
+	if (playMode === "random") {
+		currentIndex = Math.floor(Math.random() * playlist.length);
+	} else {
+		currentIndex = (currentIndex + 1) % playlist.length;
+	}
+	setTimeout(() => {
+		if (audio) audio.play();
+	}, 100);
+}
+
+function playPrev() {
+	currentIndex = (currentIndex - 1 + playlist.length) % playlist.length;
+	setTimeout(() => {
+		if (audio) audio.play();
+	}, 100);
+}
+
+function handleTimeUpdate() {
+	if (audio) {
+		currentTime = audio.currentTime;
+	}
+}
+
+function handleLoadedMetadata() {
+	if (audio) {
+		duration = audio.duration;
+	}
+}
+
+function handleEnded() {
+	if (playMode === "single") {
+		if (audio) audio.play();
+	} else {
+		playNext();
+	}
+}
+
+function seek(e: MouseEvent) {
+	const progressBar = e.currentTarget as HTMLElement;
+	const rect = progressBar.getBoundingClientRect();
+	const percent = (e.clientX - rect.left) / rect.width;
+	if (audio) {
+		audio.currentTime = percent * duration;
+	}
+}
+
+function changeVolume(e: Event) {
+	const target = e.target as HTMLInputElement;
+	volume = Number.parseFloat(target.value);
+	if (audio) {
+		audio.volume = volume;
+		isMuted = volume === 0;
+	}
+}
+
+function toggleMute() {
+	if (audio) {
+		if (isMuted) {
+			audio.volume = volume;
+			isMuted = false;
+		} else {
+			audio.volume = 0;
+			isMuted = true;
+		}
+	}
+}
+
+function cyclePlayMode() {
+	const modes: (typeof playMode)[] = ["loop", "random", "single"];
+	const currentModeIndex = modes.indexOf(playMode);
+	playMode = modes[(currentModeIndex + 1) % modes.length];
+}
+
+function formatTime(seconds: number): string {
+	if (!Number.isFinite(seconds)) return "0:00";
+	const mins = Math.floor(seconds / 60);
+	const secs = Math.floor(seconds % 60);
+	return `${mins}:${secs.toString().padStart(2, "0")}`;
+}
+
+function selectSong(index: number) {
+	currentIndex = index;
+	isPlaying = true;
+	setTimeout(() => {
+		if (audio) audio.play();
+	}, 100);
+}
+
+onDestroy(() => {
+	if (audio) {
+		audio.pause();
+	}
+});
 </script>
 
 <audio

@@ -1,64 +1,64 @@
 <script lang="ts">
-    import Icon from '@iconify/svelte';
-    import { onMount } from 'svelte';
+import Icon from "@iconify/svelte";
+import { onMount } from "svelte";
 
-    interface AnnouncementConfig {
-        enable: boolean;
-        title?: string;
-        content: string;
-        icon?: string;
-        closeable?: boolean;
-        critical?: boolean;
-        link?: { text: string; url: string } | null;
-    }
+interface AnnouncementConfig {
+	enable: boolean;
+	title?: string;
+	content: string;
+	icon?: string;
+	closeable?: boolean;
+	critical?: boolean;
+	link?: { text: string; url: string } | null;
+}
 
-    let config: AnnouncementConfig | null = $state(null);
-    let visible = $state(true);
-    
-    // 使用内容的哈希作为唯一标识
-    function getContentHash(str: string): string {
-        let hash = 0;
-        for (let i = 0; i < str.length; i++) {
-            const char = str.charCodeAt(i);
-            hash = ((hash << 5) - hash) + char;
-            hash = hash & hash;
-        }
-        return `announcement-${Math.abs(hash)}`;
-    }
+let config: AnnouncementConfig | null = $state(null);
+let visible = $state(true);
 
-    onMount(async () => {
-        // 从 JSON 文件加载公告配置
-        try {
-            const response = await fetch('/announcement.json');
-            config = await response.json();
-            
-            if (!config || !config.enable) {
-                visible = false;
-                return;
-            }
-            
-            const storageKey = 'announcement-closed-v2';
-            const closedContent = localStorage.getItem(storageKey);
-            const currentKey = getContentHash(config.content);
-            
-            // 只有当关闭的公告ID与当前公告ID匹配时才隐藏
-            if (closedContent === currentKey) {
-                visible = false;
-            }
-        } catch (error) {
-            console.error('Failed to load announcement:', error);
-            visible = false;
-        }
-    });
+// 使用内容的哈希作为唯一标识
+function getContentHash(str: string): string {
+	let hash = 0;
+	for (let i = 0; i < str.length; i++) {
+		const char = str.charCodeAt(i);
+		hash = (hash << 5) - hash + char;
+		hash = hash & hash;
+	}
+	return `announcement-${Math.abs(hash)}`;
+}
 
-    function closeAnnouncement() {
-        visible = false;
-        if (config && config.closeable) {
-            const storageKey = 'announcement-closed-v2';
-            const key = getContentHash(config.content);
-            localStorage.setItem(storageKey, key);
-        }
-    }
+onMount(async () => {
+	// 从 JSON 文件加载公告配置
+	try {
+		const response = await fetch("/announcement.json");
+		config = await response.json();
+
+		if (!config || !config.enable) {
+			visible = false;
+			return;
+		}
+
+		const storageKey = "announcement-closed-v2";
+		const closedContent = localStorage.getItem(storageKey);
+		const currentKey = getContentHash(config.content);
+
+		// 只有当关闭的公告ID与当前公告ID匹配时才隐藏
+		if (closedContent === currentKey) {
+			visible = false;
+		}
+	} catch (error) {
+		console.error("Failed to load announcement:", error);
+		visible = false;
+	}
+});
+
+function closeAnnouncement() {
+	visible = false;
+	if (config?.closeable) {
+		const storageKey = "announcement-closed-v2";
+		const key = getContentHash(config.content);
+		localStorage.setItem(storageKey, key);
+	}
+}
 </script>
 
 {#if visible && config && config.enable}

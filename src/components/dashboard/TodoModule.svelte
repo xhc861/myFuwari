@@ -1,88 +1,90 @@
 <script lang="ts">
-  import { onMount } from 'svelte';
-  
-  interface TodoItem {
-    id: string;
-    task: string;
-    completed: boolean;
-  }
+import { onMount } from "svelte";
 
-  interface AnswerResponse {
-    code: number;
-    msg: string;
-    data: {
-      description_en: string;
-      description_zh: string;
-      title_en: string;
-      title_zh: string;
-    };
-    request_id: string;
-  }
+interface TodoItem {
+	id: string;
+	task: string;
+	completed: boolean;
+}
 
-  let mockTodos: TodoItem[] = [];
+interface AnswerResponse {
+	code: number;
+	msg: string;
+	data: {
+		description_en: string;
+		description_zh: string;
+		title_en: string;
+		title_zh: string;
+	};
+	request_id: string;
+}
 
-  // 从 JSON 文件动态加载待办事项
-  async function loadTodos() {
-    console.log('[TodoModule] 开始加载待办事项...');
-    try {
-      const response = await fetch('/todos.json');
-      console.log('[TodoModule] fetch 响应:', response.status);
-      mockTodos = await response.json();
-      console.log('[TodoModule] 加载的数据:', mockTodos);
-    } catch (error) {
-      console.error('[TodoModule] 加载失败:', error);
-      mockTodos = [];
-    }
-  }
+let mockTodos: TodoItem[] = [];
 
-  let confusion = '';
-  let answer: AnswerResponse['data'] | null = null;
-  let loading = false;
-  let error = '';
+// 从 JSON 文件动态加载待办事项
+async function loadTodos() {
+	console.log("[TodoModule] 开始加载待办事项...");
+	try {
+		const response = await fetch("/todos.json");
+		console.log("[TodoModule] fetch 响应:", response.status);
+		mockTodos = await response.json();
+		console.log("[TodoModule] 加载的数据:", mockTodos);
+	} catch (error) {
+		console.error("[TodoModule] 加载失败:", error);
+		mockTodos = [];
+	}
+}
 
-  onMount(() => {
-    // 确保在客户端执行
-    if (typeof window !== 'undefined') {
-      loadTodos();
-    }
-  });
+let confusion = "";
+let answer: AnswerResponse["data"] | null = null;
+let loading = false;
+let error = "";
 
-  async function findAnswer() {
-    // 确保在客户端执行
-    if (typeof window === 'undefined') return;
-    
-    if (!confusion.trim()) {
-      error = '请输入你的困惑';
-      return;
-    }
+onMount(() => {
+	// 确保在客户端执行
+	if (typeof window !== "undefined") {
+		loadTodos();
+	}
+});
 
-    loading = true;
-    error = '';
-    answer = null;
+async function findAnswer() {
+	// 确保在客户端执行
+	if (typeof window === "undefined") return;
 
-    try {
-      const response = await fetch(`https://v2.xxapi.cn/api/answers?question=${encodeURIComponent(confusion)}`);
-      const data: AnswerResponse = await response.json();
-      
-      if (data.code === 200 && data.data) {
-        answer = data.data;
-      } else {
-        error = data.msg || '获取答案失败';
-      }
-    } catch (e) {
-      error = '网络请求失败，请稍后重试';
-      console.error('Failed to fetch answer:', e);
-    } finally {
-      loading = false;
-    }
-  }
+	if (!confusion.trim()) {
+		error = "请输入你的困惑";
+		return;
+	}
 
-  function handleKeydown(event: KeyboardEvent) {
-    if (event.key === 'Enter' && !event.shiftKey) {
-      event.preventDefault();
-      findAnswer();
-    }
-  }
+	loading = true;
+	error = "";
+	answer = null;
+
+	try {
+		const response = await fetch(
+			`https://v2.xxapi.cn/api/answers?question=${encodeURIComponent(confusion)}`,
+		);
+		const data: AnswerResponse = await response.json();
+
+		if (data.code === 200 && data.data) {
+			answer = data.data;
+		} else {
+			error = data.msg || "获取答案失败";
+		}
+	} catch (e) {
+		error = "网络请求失败，请稍后重试";
+		console.error("Failed to fetch answer:", e);
+	} finally {
+		loading = false;
+	}
+}
+
+function handleKeydown(event: KeyboardEvent) {
+	if (event.key === "Enter" && !event.shiftKey) {
+		event.preventDefault();
+		findAnswer();
+	}
+}
 </script>
 
 <div class="todo-module card-base">

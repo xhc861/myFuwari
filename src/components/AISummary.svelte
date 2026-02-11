@@ -1,156 +1,158 @@
 <script lang="ts">
-  import MarkdownIt from 'markdown-it';
-  
-  export let content: string;
-  export let title: string;
-  
-  let summary = '';
-  let loading = false;
-  let streaming = false;
-  let error = '';
-  let expanded = false;
-  
-  // 配置 markdown-it
-  const md = new MarkdownIt({
-    html: false,
-    breaks: true,
-    linkify: true
-  });
-  
-  $: renderedSummary = summary ? md.render(summary) : '';
-  
-  async function generateSummary() {
-    if (summary && !error && !streaming) {
-      expanded = !expanded;
-      return;
-    }
-    
-    loading = true;
-    streaming = true;
-    error = '';
-    summary = '';
-    expanded = true;
-    
-    let timeoutId: number | undefined;
-    let reader: ReadableStreamDefaultReader<Uint8Array> | undefined;
-    
-    try {
-      // 设置超时（60秒）
-      const timeoutPromise = new Promise((_, reject) => {
-        timeoutId = window.setTimeout(() => {
-          reject(new Error('请求超时，请稍后重试'));
-        }, 60000);
-      });
-      
-      // 调用服务端 API（注意添加尾部斜杠以匹配 trailingSlash 配置）
-      const fetchPromise = fetch('/api/ai-summary/', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          content,
-          title
-        })
-      });
-      
-      const response = await Promise.race([fetchPromise, timeoutPromise]) as Response;
-      
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || `API 请求失败: ${response.status}`);
-      }
-      
-      // 处理流式响应
-      reader = response.body?.getReader();
-      const decoder = new TextDecoder();
-      
-      if (!reader) {
-        throw new Error('无法读取响应流');
-      }
-      
-      loading = false;
-      let lastUpdateTime = Date.now();
-      
-      while (true) {
-        // 检查是否长时间没有更新（30秒无数据视为超时）
-        if (Date.now() - lastUpdateTime > 30000) {
-          throw new Error('响应流超时，请稍后重试');
-        }
-        
-        const { done, value } = await reader.read();
-        
-        if (done) {
-          streaming = false;
-          // 去除结尾的空白
-          summary = summary.trimEnd();
-          break;
-        }
-        
-        lastUpdateTime = Date.now();
-        const chunk = decoder.decode(value, { stream: true });
-        const lines = chunk.split('\n');
-        
-        for (const line of lines) {
-          const trimmedLine = line.trim();
-          if (!trimmedLine || !trimmedLine.startsWith('data: ')) {
-            continue;
-          }
-          
-          const data = trimmedLine.slice(6);
-          
-          if (data === '[DONE]') {
-            streaming = false;
-            summary = summary.trimEnd();
-            if (timeoutId) clearTimeout(timeoutId);
-            return;
-          }
-          
-          try {
-            const parsed = JSON.parse(data);
-            const delta = parsed.choices?.[0]?.delta?.content;
-            
-            if (delta) {
-              // 如果是第一次接收内容，去除开头的空白
-              if (summary === '') {
-                summary += delta.trimStart();
-              } else {
-                summary += delta;
-              }
-            }
-            
-            // 检查是否完成
-            const finishReason = parsed.choices?.[0]?.finish_reason;
-            if (finishReason === 'stop' || finishReason === 'length') {
-              streaming = false;
-              summary = summary.trimEnd();
-              if (timeoutId) clearTimeout(timeoutId);
-              return;
-            }
-          } catch (e) {
-            // 忽略单个数据块的解析错误，继续处理下一个
-            console.warn('Failed to parse SSE data:', data, e);
-          }
-        }
-      }
-      
-    } catch (e) {
-      error = e instanceof Error ? e.message : '生成总结失败，请稍后重试';
-      console.error('AI Summary Error:', e);
-      streaming = false;
-    } finally {
-      loading = false;
-      streaming = false;
-      if (timeoutId) clearTimeout(timeoutId);
-      if (reader) {
-        try {
-          await reader.cancel();
-        } catch (e) {
-          console.warn('Failed to cancel reader:', e);
-        }
-      }
-    }
-  }
+import MarkdownIt from "markdown-it";
+
+export let content: string;
+export let title: string;
+
+let summary = "";
+let loading = false;
+let streaming = false;
+let error = "";
+let expanded = false;
+
+// 配置 markdown-it
+const md = new MarkdownIt({
+	html: false,
+	breaks: true,
+	linkify: true,
+});
+
+$: renderedSummary = summary ? md.render(summary) : "";
+
+async function generateSummary() {
+	if (summary && !error && !streaming) {
+		expanded = !expanded;
+		return;
+	}
+
+	loading = true;
+	streaming = true;
+	error = "";
+	summary = "";
+	expanded = true;
+
+	let timeoutId: number | undefined;
+	let reader: ReadableStreamDefaultReader<Uint8Array> | undefined;
+
+	try {
+		// 设置超时（60秒）
+		const timeoutPromise = new Promise((_, reject) => {
+			timeoutId = window.setTimeout(() => {
+				reject(new Error("请求超时，请稍后重试"));
+			}, 60000);
+		});
+
+		// 调用服务端 API（注意添加尾部斜杠以匹配 trailingSlash 配置）
+		const fetchPromise = fetch("/api/ai-summary/", {
+			method: "POST",
+			headers: {
+				"Content-Type": "application/json",
+			},
+			body: JSON.stringify({
+				content,
+				title,
+			}),
+		});
+
+		const response = (await Promise.race([
+			fetchPromise,
+			timeoutPromise,
+		])) as Response;
+
+		if (!response.ok) {
+			const errorData = await response.json();
+			throw new Error(errorData.error || `API 请求失败: ${response.status}`);
+		}
+
+		// 处理流式响应
+		reader = response.body?.getReader();
+		const decoder = new TextDecoder();
+
+		if (!reader) {
+			throw new Error("无法读取响应流");
+		}
+
+		loading = false;
+		let lastUpdateTime = Date.now();
+
+		while (true) {
+			// 检查是否长时间没有更新（30秒无数据视为超时）
+			if (Date.now() - lastUpdateTime > 30000) {
+				throw new Error("响应流超时，请稍后重试");
+			}
+
+			const { done, value } = await reader.read();
+
+			if (done) {
+				streaming = false;
+				// 去除结尾的空白
+				summary = summary.trimEnd();
+				break;
+			}
+
+			lastUpdateTime = Date.now();
+			const chunk = decoder.decode(value, { stream: true });
+			const lines = chunk.split("\n");
+
+			for (const line of lines) {
+				const trimmedLine = line.trim();
+				if (!trimmedLine || !trimmedLine.startsWith("data: ")) {
+					continue;
+				}
+
+				const data = trimmedLine.slice(6);
+
+				if (data === "[DONE]") {
+					streaming = false;
+					summary = summary.trimEnd();
+					if (timeoutId) clearTimeout(timeoutId);
+					return;
+				}
+
+				try {
+					const parsed = JSON.parse(data);
+					const delta = parsed.choices?.[0]?.delta?.content;
+
+					if (delta) {
+						// 如果是第一次接收内容，去除开头的空白
+						if (summary === "") {
+							summary += delta.trimStart();
+						} else {
+							summary += delta;
+						}
+					}
+
+					// 检查是否完成
+					const finishReason = parsed.choices?.[0]?.finish_reason;
+					if (finishReason === "stop" || finishReason === "length") {
+						streaming = false;
+						summary = summary.trimEnd();
+						if (timeoutId) clearTimeout(timeoutId);
+						return;
+					}
+				} catch (e) {
+					// 忽略单个数据块的解析错误，继续处理下一个
+					console.warn("Failed to parse SSE data:", data, e);
+				}
+			}
+		}
+	} catch (e) {
+		error = e instanceof Error ? e.message : "生成总结失败，请稍后重试";
+		console.error("AI Summary Error:", e);
+		streaming = false;
+	} finally {
+		loading = false;
+		streaming = false;
+		if (timeoutId) clearTimeout(timeoutId);
+		if (reader) {
+			try {
+				await reader.cancel();
+			} catch (e) {
+				console.warn("Failed to cancel reader:", e);
+			}
+		}
+	}
+}
 </script>
 
 <div class="ai-summary-container">

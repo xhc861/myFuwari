@@ -1,97 +1,102 @@
 <script lang="ts">
-  import { onMount, onDestroy } from 'svelte';
-  import QRCode from 'qrcode';
-  import JsBarcode from 'jsbarcode';
-  
-  export let show = false;
-  export let title: string;
-  export let slug: string;
-  export let published: Date;
-  export let words: number;
-  export let minutes: number;
-  
-  let url = '';
-  let qrCodeDataUrl = '';
-  let copied = false;
-  let modalElement: HTMLDivElement;
-  let barcodeCanvas: HTMLCanvasElement;
-  
-  onMount(() => {
-    url = window.location.href;
-    generateQRCode();
-  });
-  
-  async function generateQRCode() {
-    try {
-      qrCodeDataUrl = await QRCode.toDataURL(url, {
-        width: 150,
-        margin: 1,
-        color: {
-          dark: '#000000',
-          light: '#ffffff'
-        }
-      });
-    } catch (err) {
-      console.error('生成二维码失败:', err);
-    }
-  }
-  
-  function generateBarcode() {
-    if (!barcodeCanvas) return;
-    
-    try {
-      // 使用文章 slug 和时间戳生成唯一的条码
-      const barcodeData = `${slug}-${Date.now()}`.substring(0, 20).toUpperCase().replace(/[^A-Z0-9]/g, '');
-      
-      JsBarcode(barcodeCanvas, barcodeData, {
-        format: 'CODE128',
-        width: 2,
-        height: 60,
-        displayValue: false,
-        background: 'transparent',
-        lineColor: document.documentElement.classList.contains('dark') ? '#ffffff' : '#000000',
-        margin: 0
-      });
-    } catch (err) {
-      console.error('生成条码失败:', err);
-    }
-  }
-  
-  function copyLink() {
-    navigator.clipboard.writeText(url).then(() => {
-      copied = true;
-      setTimeout(() => {
-        copied = false;
-      }, 2000);
-    });
-  }
-  
-  function close() {
-    show = false;
-  }
-  
-  function handleKeydown(event: KeyboardEvent) {
-    if (event.key === 'Escape' && show) {
-      close();
-    }
-  }
-  
-  // 当模态框显示时，将其移动到 body 并锁定滚动
-  $: if (show && modalElement) {
-    document.body.appendChild(modalElement);
-    document.body.style.overflow = 'hidden';
-    url = window.location.href;
-    generateQRCode();
-    setTimeout(generateBarcode, 100);
-  } else if (!show && typeof document !== 'undefined') {
-    document.body.style.overflow = '';
-  }
-  
-  onDestroy(() => {
-    if (typeof document !== 'undefined') {
-      document.body.style.overflow = '';
-    }
-  });
+import JsBarcode from "jsbarcode";
+import QRCode from "qrcode";
+import { onDestroy, onMount } from "svelte";
+
+export let show = false;
+export let title: string;
+export let slug: string;
+export let published: Date;
+export let words: number;
+export let minutes: number;
+
+let url = "";
+let qrCodeDataUrl = "";
+let copied = false;
+let modalElement: HTMLDivElement;
+let barcodeCanvas: HTMLCanvasElement;
+
+onMount(() => {
+	url = window.location.href;
+	generateQRCode();
+});
+
+async function generateQRCode() {
+	try {
+		qrCodeDataUrl = await QRCode.toDataURL(url, {
+			width: 150,
+			margin: 1,
+			color: {
+				dark: "#000000",
+				light: "#ffffff",
+			},
+		});
+	} catch (err) {
+		console.error("生成二维码失败:", err);
+	}
+}
+
+function generateBarcode() {
+	if (!barcodeCanvas) return;
+
+	try {
+		// 使用文章 slug 和时间戳生成唯一的条码
+		const barcodeData = `${slug}-${Date.now()}`
+			.substring(0, 20)
+			.toUpperCase()
+			.replace(/[^A-Z0-9]/g, "");
+
+		JsBarcode(barcodeCanvas, barcodeData, {
+			format: "CODE128",
+			width: 2,
+			height: 60,
+			displayValue: false,
+			background: "transparent",
+			lineColor: document.documentElement.classList.contains("dark")
+				? "#ffffff"
+				: "#000000",
+			margin: 0,
+		});
+	} catch (err) {
+		console.error("生成条码失败:", err);
+	}
+}
+
+function copyLink() {
+	navigator.clipboard.writeText(url).then(() => {
+		copied = true;
+		setTimeout(() => {
+			copied = false;
+		}, 2000);
+	});
+}
+
+function close() {
+	show = false;
+}
+
+function handleKeydown(event: KeyboardEvent) {
+	if (event.key === "Escape" && show) {
+		close();
+	}
+}
+
+// 当模态框显示时，将其移动到 body 并锁定滚动
+$: if (show && modalElement) {
+	document.body.appendChild(modalElement);
+	document.body.style.overflow = "hidden";
+	url = window.location.href;
+	generateQRCode();
+	setTimeout(generateBarcode, 100);
+} else if (!show && typeof document !== "undefined") {
+	document.body.style.overflow = "";
+}
+
+onDestroy(() => {
+	if (typeof document !== "undefined") {
+		document.body.style.overflow = "";
+	}
+});
 </script>
 
 <svelte:window on:keydown={handleKeydown} />

@@ -1,94 +1,111 @@
 <script lang="ts">
-  import { onMount } from 'svelte';
+import { onMount } from "svelte";
 
-  interface CalendarData {
-    date: string;
-    weekday: string;
-    lunar: string;
-    jieqi: string;
-    luckyConstellation: string;
-    festival: string;
-  }
+interface CalendarData {
+	date: string;
+	weekday: string;
+	lunar: string;
+	jieqi: string;
+	luckyConstellation: string;
+	festival: string;
+}
 
-  let calendarData: CalendarData | null = null;
-  let loading = true;
+let calendarData: CalendarData | null = null;
+let loading = true;
 
-  function fetchCalendarData() {
-    const now = new Date();
-    const year = now.getFullYear();
-    const month = String(now.getMonth() + 1).padStart(2, '0');
-    const day = String(now.getDate()).padStart(2, '0');
-    const url = `https://m.rili.com.cn/rili/json/today/${year}/${month}${day}.js`;
-    
-    // 定义全局回调函数
-    (window as any).jsonrun_Today = (data: any) => {
-      try {
-        // 提取节日信息
-        let festivalName = '';
-        if (data.jieri && Array.isArray(data.jieri) && data.jieri.length > 0) {
-          festivalName = data.jieri[0].name || '';
-        }
+function fetchCalendarData() {
+	const now = new Date();
+	const year = now.getFullYear();
+	const month = String(now.getMonth() + 1).padStart(2, "0");
+	const day = String(now.getDate()).padStart(2, "0");
+	const url = `https://m.rili.com.cn/rili/json/today/${year}/${month}${day}.js`;
 
-        calendarData = {
-          date: data.yangli?.date || `${year}年${month}月${day}日`,
-          weekday: data.yangli?.xingqi || '',
-          lunar: data.nongli?.yueri || '',
-          jieqi: data.jieqi?.jieqi || '',
-          luckyConstellation: data.xingzuo?.xingzuo ? `${data.xingzuo.xingzuo}座` : '',
-          festival: festivalName
-        };
-      } catch (error) {
-        console.error('解析日历数据失败:', error);
-        useFallbackData();
-      } finally {
-        loading = false;
-      }
-    };
-    
-    // 创建 script 标签加载 JSONP
-    const script = document.createElement('script');
-    script.src = url;
-    
-    script.onerror = () => {
-      console.error('加载日历数据失败');
-      useFallbackData();
-    };
-    
-    document.head.appendChild(script);
-    
-    // 设置超时保护
-    setTimeout(() => {
-      if (loading) {
-        console.warn('日历数据加载超时');
-        useFallbackData();
-      }
-    }, 5000);
-  }
+	// 定义全局回调函数
+	interface CalendarData {
+		jieri?: Array<{ name?: string }>;
+		[key: string]: unknown;
+	}
 
-  function useFallbackData() {
-    const now = new Date();
-    const year = now.getFullYear();
-    const month = now.getMonth() + 1;
-    const day = now.getDate();
-    const weekdays = ['星期日', '星期一', '星期二', '星期三', '星期四', '星期五', '星期六'];
-    
-    calendarData = {
-      date: `${year}年${month}月${day}日`,
-      weekday: weekdays[now.getDay()],
-      lunar: '农历数据加载失败',
-      jieqi: '',
-      luckyConstellation: '',
-      festival: ''
-    };
-    loading = false;
-  }
+	(window as { jsonrun_Today?: (data: CalendarData) => void }).jsonrun_Today = (
+		data: CalendarData,
+	) => {
+		try {
+			// 提取节日信息
+			let festivalName = "";
+			if (data.jieri && Array.isArray(data.jieri) && data.jieri.length > 0) {
+				festivalName = data.jieri[0].name || "";
+			}
 
-  onMount(() => {
-    // 确保在客户端执行
-    if (typeof window !== 'undefined') {
-      fetchCalendarData();
-    }
-  });
+			calendarData = {
+				date: data.yangli?.date || `${year}年${month}月${day}日`,
+				weekday: data.yangli?.xingqi || "",
+				lunar: data.nongli?.yueri || "",
+				jieqi: data.jieqi?.jieqi || "",
+				luckyConstellation: data.xingzuo?.xingzuo
+					? `${data.xingzuo.xingzuo}座`
+					: "",
+				festival: festivalName,
+			};
+		} catch (error) {
+			console.error("解析日历数据失败:", error);
+			useFallbackData();
+		} finally {
+			loading = false;
+		}
+	};
+
+	// 创建 script 标签加载 JSONP
+	const script = document.createElement("script");
+	script.src = url;
+
+	script.onerror = () => {
+		console.error("加载日历数据失败");
+		useFallbackData();
+	};
+
+	document.head.appendChild(script);
+
+	// 设置超时保护
+	setTimeout(() => {
+		if (loading) {
+			console.warn("日历数据加载超时");
+			useFallbackData();
+		}
+	}, 5000);
+}
+
+function useFallbackData() {
+	const now = new Date();
+	const year = now.getFullYear();
+	const month = now.getMonth() + 1;
+	const day = now.getDate();
+	const weekdays = [
+		"星期日",
+		"星期一",
+		"星期二",
+		"星期三",
+		"星期四",
+		"星期五",
+		"星期六",
+	];
+
+	calendarData = {
+		date: `${year}年${month}月${day}日`,
+		weekday: weekdays[now.getDay()],
+		lunar: "农历数据加载失败",
+		jieqi: "",
+		luckyConstellation: "",
+		festival: "",
+	};
+	loading = false;
+}
+
+onMount(() => {
+	// 确保在客户端执行
+	if (typeof window !== "undefined") {
+		fetchCalendarData();
+	}
+});
 </script>
 
 <div class="calendar-module card-base">

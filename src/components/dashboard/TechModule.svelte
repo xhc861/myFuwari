@@ -1,22 +1,46 @@
 <script lang="ts">
-  // TODO: 未来将从 GitHub API 获取数据
-  // API 集成点: fetchTrendingRepos()
-  
-  interface Repository {
-    id: string;
-    name: string;
-    description: string;
-    stars: number;
-    language: string;
-  }
+// TODO: 未来将从 GitHub API 获取数据
+// API 集成点: fetchTrendingRepos()
 
-  // 模拟数据
-  const mockRepos: Repository[] = [
-    { id: '1', name: 'awesome-ai', description: '精选的人工智能资源和工具集合', stars: 45200, language: 'Python' },
-    { id: '2', name: 'react-next-gen', description: '下一代 React 开发框架', stars: 32100, language: 'TypeScript' },
-    { id: '3', name: 'rust-performance', description: '高性能 Rust 应用开发指南', stars: 28900, language: 'Rust' },
-    { id: '4', name: 'devops-toolkit', description: '现代化 DevOps 工具链', stars: 19500, language: 'Go' }
-  ];
+interface Repository {
+	id: string;
+	name: string;
+	description: string;
+	stars: number;
+	language: string;
+}
+
+// 模拟数据
+const mockRepos: Repository[] = [
+	{
+		id: "1",
+		name: "awesome-ai",
+		description: "精选的人工智能资源和工具集合",
+		stars: 45200,
+		language: "Python",
+	},
+	{
+		id: "2",
+		name: "react-next-gen",
+		description: "下一代 React 开发框架",
+		stars: 32100,
+		language: "TypeScript",
+	},
+	{
+		id: "3",
+		name: "rust-performance",
+		description: "高性能 Rust 应用开发指南",
+		stars: 28900,
+		language: "Rust",
+	},
+	{
+		id: "4",
+		name: "devops-toolkit",
+		description: "现代化 DevOps 工具链",
+		stars: 19500,
+		language: "Go",
+	},
+];
 </script>
 
 <div class="tech-module card-base">

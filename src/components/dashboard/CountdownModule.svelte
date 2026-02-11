@@ -1,76 +1,86 @@
 <script lang="ts">
-  import { onMount } from 'svelte';
+import { onMount } from "svelte";
 
-  interface Countdown {
-    id: string;
-    name: string;
-    targetDate: string;
-  }
+interface Countdown {
+	id: string;
+	name: string;
+	targetDate: string;
+}
 
-  let countdowns: Countdown[] = [];
-  let remainingDays: { [key: string]: number } = {};
+let countdowns: Countdown[] = [];
+let remainingDays: { [key: string]: number } = {};
 
-  // 从 JSON 文件动态加载倒计时数据
-  async function loadCountdowns() {
-    console.log('[CountdownModule] 开始加载倒计时数据...');
-    try {
-      const response = await fetch('/countdowns.json');
-      console.log('[CountdownModule] fetch 响应:', response.status);
-      const data = await response.json();
-      console.log('[CountdownModule] 加载的数据:', data);
-      countdowns = data;
-      calculateRemainingDays();
-      console.log('[CountdownModule] 倒计时数据加载成功，共', countdowns.length, '项');
-    } catch (error) {
-      console.error('[CountdownModule] 加载失败:', error);
-      countdowns = [];
-    }
-  }
+// 从 JSON 文件动态加载倒计时数据
+async function loadCountdowns() {
+	console.log("[CountdownModule] 开始加载倒计时数据...");
+	try {
+		const response = await fetch("/countdowns.json");
+		console.log("[CountdownModule] fetch 响应:", response.status);
+		const data = await response.json();
+		console.log("[CountdownModule] 加载的数据:", data);
+		countdowns = data;
+		calculateRemainingDays();
+		console.log(
+			"[CountdownModule] 倒计时数据加载成功，共",
+			countdowns.length,
+			"项",
+		);
+	} catch (error) {
+		console.error("[CountdownModule] 加载失败:", error);
+		countdowns = [];
+	}
+}
 
-  // 计算剩余天数
-  function calculateRemainingDays() {
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    
-    countdowns.forEach(countdown => {
-      const target = new Date(countdown.targetDate);
-      target.setHours(0, 0, 0, 0);
-      const diff = Math.ceil((target.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
-      remainingDays[countdown.id] = diff;
-    });
-  }
+// 计算剩余天数
+function calculateRemainingDays() {
+	const today = new Date();
+	today.setHours(0, 0, 0, 0);
 
-  function formatDays(days: number): string {
-    if (days > 0) {
-      return `还有 ${days} 天`;
-    } else if (days === 0) {
-      return '今天';
-    } else {
-      return `已过 ${Math.abs(days)} 天`;
-    }
-  }
+	countdowns.forEach((countdown) => {
+		const target = new Date(countdown.targetDate);
+		target.setHours(0, 0, 0, 0);
+		const diff = Math.ceil(
+			(target.getTime() - today.getTime()) / (1000 * 60 * 60 * 24),
+		);
+		remainingDays[countdown.id] = diff;
+	});
+}
 
-  onMount(() => {
-    console.log('[CountdownModule] onMount 被调用');
-    // 确保在客户端执行
-    if (typeof window !== 'undefined') {
-      console.log('[CountdownModule] 在客户端环境，开始加载数据');
-      loadCountdowns();
-      
-      // 每天午夜更新一次
-      const now = new Date();
-      const tomorrow = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1);
-      const msUntilMidnight = tomorrow.getTime() - now.getTime();
-      
-      setTimeout(() => {
-        calculateRemainingDays();
-        // 之后每24小时更新一次
-        setInterval(calculateRemainingDays, 24 * 60 * 60 * 1000);
-      }, msUntilMidnight);
-    } else {
-      console.log('[CountdownModule] 不在客户端环境');
-    }
-  });
+function formatDays(days: number): string {
+	if (days > 0) {
+		return `还有 ${days} 天`;
+	}
+	if (days === 0) {
+		return "今天";
+	}
+	return `已过 ${Math.abs(days)} 天`;
+}
+
+onMount(() => {
+	console.log("[CountdownModule] onMount 被调用");
+	// 确保在客户端执行
+	if (typeof window !== "undefined") {
+		console.log("[CountdownModule] 在客户端环境，开始加载数据");
+		loadCountdowns();
+
+		// 每天午夜更新一次
+		const now = new Date();
+		const tomorrow = new Date(
+			now.getFullYear(),
+			now.getMonth(),
+			now.getDate() + 1,
+		);
+		const msUntilMidnight = tomorrow.getTime() - now.getTime();
+
+		setTimeout(() => {
+			calculateRemainingDays();
+			// 之后每24小时更新一次
+			setInterval(calculateRemainingDays, 24 * 60 * 60 * 1000);
+		}, msUntilMidnight);
+	} else {
+		console.log("[CountdownModule] 不在客户端环境");
+	}
+});
 </script>
 
 <div class="countdown-module">

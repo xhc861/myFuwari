@@ -1,84 +1,89 @@
 <script lang="ts">
-  import { onMount } from 'svelte';
+import { onMount } from "svelte";
 
-  interface TimeProgress {
-    label: string;
-    value: string;
-    percentage: number;
-    color: string;
-  }
+interface TimeProgress {
+	label: string;
+	value: string;
+	percentage: number;
+	color: string;
+}
 
-  let progressData: TimeProgress[] = [];
+let progressData: TimeProgress[] = [];
 
-  function calculateProgress() {
-    const now = new Date();
-    
-    // 今日已经过去
-    const dayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-    const dayElapsed = now.getTime() - dayStart.getTime();
-    const dayTotal = 24 * 60 * 60 * 1000;
-    const dayPercentage = Math.min((dayElapsed / dayTotal) * 100, 100);
-    const hoursElapsed = Math.floor(dayElapsed / (60 * 60 * 1000));
-    
-    // 这周已经过去
-    const weekDay = now.getDay() === 0 ? 7 : now.getDay(); // 周日为7
-    const weekStart = new Date(now.getFullYear(), now.getMonth(), now.getDate() - weekDay + 1);
-    const weekElapsed = now.getTime() - weekStart.getTime();
-    const weekTotal = 7 * 24 * 60 * 60 * 1000;
-    const weekPercentage = Math.min((weekElapsed / weekTotal) * 100, 100);
-    const daysElapsed = Math.floor(weekElapsed / (24 * 60 * 60 * 1000));
-    
-    // 本月已经过去
-    const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
-    monthStart.setHours(0, 0, 0, 0); // 确保从月初 00:00:00 开始
-    const monthEnd = new Date(now.getFullYear(), now.getMonth() + 1, 0);
-    monthEnd.setHours(23, 59, 59, 999); // 确保到月末 23:59:59 结束
-    const monthElapsed = now.getTime() - monthStart.getTime();
-    const monthTotal = monthEnd.getTime() - monthStart.getTime();
-    const monthPercentage = Math.min((monthElapsed / monthTotal) * 100, 100); // 确保不超过100%
-    const monthDaysElapsed = now.getDate(); // 显示当前日期
-    
-    // 今年已经过去
-    const yearStart = new Date(now.getFullYear(), 0, 1);
-    const yearElapsed = now.getTime() - yearStart.getTime();
-    const yearTotal = new Date(now.getFullYear() + 1, 0, 1).getTime() - yearStart.getTime();
-    const yearPercentage = Math.min((yearElapsed / yearTotal) * 100, 100);
-    const monthsElapsed = now.getMonth() + 1;
-    
-    progressData = [
-      {
-        label: '今日已经过去',
-        value: `${hoursElapsed} 小时`,
-        percentage: dayPercentage,
-        color: 'var(--primary)'
-      },
-      {
-        label: '这周已经过去',
-        value: `${daysElapsed} 天`,
-        percentage: weekPercentage,
-        color: 'var(--primary)'
-      },
-      {
-        label: '本月已经过去',
-        value: `${monthDaysElapsed} 天`,
-        percentage: monthPercentage,
-        color: 'var(--primary)'
-      },
-      {
-        label: '今年已经过去',
-        value: `${monthsElapsed} 个月`,
-        percentage: yearPercentage,
-        color: 'var(--primary)'
-      }
-    ];
-  }
+function calculateProgress() {
+	const now = new Date();
 
-  onMount(() => {
-    calculateProgress();
-    // 每分钟更新一次
-    const interval = setInterval(calculateProgress, 60000);
-    return () => clearInterval(interval);
-  });
+	// 今日已经过去
+	const dayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+	const dayElapsed = now.getTime() - dayStart.getTime();
+	const dayTotal = 24 * 60 * 60 * 1000;
+	const dayPercentage = Math.min((dayElapsed / dayTotal) * 100, 100);
+	const hoursElapsed = Math.floor(dayElapsed / (60 * 60 * 1000));
+
+	// 这周已经过去
+	const weekDay = now.getDay() === 0 ? 7 : now.getDay(); // 周日为7
+	const weekStart = new Date(
+		now.getFullYear(),
+		now.getMonth(),
+		now.getDate() - weekDay + 1,
+	);
+	const weekElapsed = now.getTime() - weekStart.getTime();
+	const weekTotal = 7 * 24 * 60 * 60 * 1000;
+	const weekPercentage = Math.min((weekElapsed / weekTotal) * 100, 100);
+	const daysElapsed = Math.floor(weekElapsed / (24 * 60 * 60 * 1000));
+
+	// 本月已经过去
+	const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
+	monthStart.setHours(0, 0, 0, 0); // 确保从月初 00:00:00 开始
+	const monthEnd = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+	monthEnd.setHours(23, 59, 59, 999); // 确保到月末 23:59:59 结束
+	const monthElapsed = now.getTime() - monthStart.getTime();
+	const monthTotal = monthEnd.getTime() - monthStart.getTime();
+	const monthPercentage = Math.min((monthElapsed / monthTotal) * 100, 100); // 确保不超过100%
+	const monthDaysElapsed = now.getDate(); // 显示当前日期
+
+	// 今年已经过去
+	const yearStart = new Date(now.getFullYear(), 0, 1);
+	const yearElapsed = now.getTime() - yearStart.getTime();
+	const yearTotal =
+		new Date(now.getFullYear() + 1, 0, 1).getTime() - yearStart.getTime();
+	const yearPercentage = Math.min((yearElapsed / yearTotal) * 100, 100);
+	const monthsElapsed = now.getMonth() + 1;
+
+	progressData = [
+		{
+			label: "今日已经过去",
+			value: `${hoursElapsed} 小时`,
+			percentage: dayPercentage,
+			color: "var(--primary)",
+		},
+		{
+			label: "这周已经过去",
+			value: `${daysElapsed} 天`,
+			percentage: weekPercentage,
+			color: "var(--primary)",
+		},
+		{
+			label: "本月已经过去",
+			value: `${monthDaysElapsed} 天`,
+			percentage: monthPercentage,
+			color: "var(--primary)",
+		},
+		{
+			label: "今年已经过去",
+			value: `${monthsElapsed} 个月`,
+			percentage: yearPercentage,
+			color: "var(--primary)",
+		},
+	];
+}
+
+onMount(() => {
+	calculateProgress();
+	// 每分钟更新一次
+	const interval = setInterval(calculateProgress, 60000);
+	return () => clearInterval(interval);
+});
 </script>
 
 <div class="time-progress-container card-base">

@@ -23,6 +23,10 @@ const specCollection = defineCollection({
 	schema: z.object({}),
 });
 export const collections = {
-	posts: postsCollection satisfies ReturnType<typeof defineCollection> as ReturnType<typeof defineCollection>,
-	spec: specCollection satisfies ReturnType<typeof defineCollection> as ReturnType<typeof defineCollection>,
+	posts: postsCollection satisfies ReturnType<
+		typeof defineCollection
+	> as ReturnType<typeof defineCollection>,
+	spec: specCollection satisfies ReturnType<
+		typeof defineCollection
+	> as ReturnType<typeof defineCollection>,
 };

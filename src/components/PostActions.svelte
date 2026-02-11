@@ -1,54 +1,54 @@
 <script lang="ts">
-  import ShareModal from './ShareModal.svelte';
-  import { onDestroy } from 'svelte';
-  
-  export let slug: string;
-  export let title: string;
-  export let published: Date;
-  export let words: number;
-  export let minutes: number;
-  
-  let showShareModal = false;
-  
-  // 激光笔功能
-  let laserPointerEnabled = false;
-  let laserElement: HTMLDivElement | null = null;
-  
-  // 聚光灯功能
-  let spotlightEnabled = false;
-  
-  function addFavorite() {
-    const isMac = navigator.platform.toUpperCase().indexOf('MAC') >= 0;
-    const shortcut = isMac ? 'Cmd+D' : 'Ctrl+D';
-    alert(`请按 ${shortcut} 将本页添加到书签`);
-  }
-  
-  function handleShare() {
-    showShareModal = true;
-  }
-  
-  async function exportToPDF() {
-    // 使用浏览器打印功能导出 PDF
-    window.print();
-  }
-  
-  // 激光笔功能
-  function toggleLaserPointer() {
-    laserPointerEnabled = !laserPointerEnabled;
-    
-    if (laserPointerEnabled) {
-      createLaserPointer();
-    } else {
-      removeLaserPointer();
-    }
-  }
-  
-  function createLaserPointer() {
-    if (laserElement) return;
-    
-    laserElement = document.createElement('div');
-    laserElement.className = 'laser-pointer';
-    laserElement.style.cssText = `
+import { onDestroy } from "svelte";
+import ShareModal from "./ShareModal.svelte";
+
+export let slug: string;
+export let title: string;
+export let published: Date;
+export let words: number;
+export let minutes: number;
+
+let showShareModal = false;
+
+// 激光笔功能
+let laserPointerEnabled = false;
+let laserElement: HTMLDivElement | null = null;
+
+// 聚光灯功能
+let spotlightEnabled = false;
+
+function addFavorite() {
+	const isMac = navigator.platform.toUpperCase().indexOf("MAC") >= 0;
+	const shortcut = isMac ? "Cmd+D" : "Ctrl+D";
+	alert(`请按 ${shortcut} 将本页添加到书签`);
+}
+
+function handleShare() {
+	showShareModal = true;
+}
+
+async function exportToPDF() {
+	// 使用浏览器打印功能导出 PDF
+	window.print();
+}
+
+// 激光笔功能
+function toggleLaserPointer() {
+	laserPointerEnabled = !laserPointerEnabled;
+
+	if (laserPointerEnabled) {
+		createLaserPointer();
+	} else {
+		removeLaserPointer();
+	}
+}
+
+function createLaserPointer() {
+	if (laserElement) return;
+
+	laserElement = document.createElement("div");
+	laserElement.className = "laser-pointer";
+	laserElement.style.cssText = `
       position: fixed;
       width: 20px;
       height: 20px;
@@ -59,44 +59,46 @@
       box-shadow: 0 0 20px rgba(255, 0, 0, 0.8), 0 0 40px rgba(255, 0, 0, 0.4);
       transform: translate(-50%, -50%);
     `;
-    
-    document.body.appendChild(laserElement);
-    document.addEventListener('mousemove', updateLaserPosition);
-  }
-  
-  function updateLaserPosition(e: MouseEvent) {
-    if (laserElement) {
-      laserElement.style.left = `${e.clientX}px`;
-      laserElement.style.top = `${e.clientY}px`;
-    }
-  }
-  
-  function removeLaserPointer() {
-    if (laserElement) {
-      document.removeEventListener('mousemove', updateLaserPosition);
-      laserElement.remove();
-      laserElement = null;
-    }
-  }
-  
-  // 聚光灯功能
-  function toggleSpotlight() {
-    spotlightEnabled = !spotlightEnabled;
-    
-    // 更新设置并触发事件
-    const saved = localStorage.getItem('effectsSettings');
-    const settings = saved ? JSON.parse(saved) : {};
-    settings.spotlightEnabled = spotlightEnabled;
-    localStorage.setItem('effectsSettings', JSON.stringify(settings));
-    
-    window.dispatchEvent(new CustomEvent('effectsSettingsChanged', {
-      detail: settings
-    }));
-  }
-  
-  onDestroy(() => {
-    removeLaserPointer();
-  });
+
+	document.body.appendChild(laserElement);
+	document.addEventListener("mousemove", updateLaserPosition);
+}
+
+function updateLaserPosition(e: MouseEvent) {
+	if (laserElement) {
+		laserElement.style.left = `${e.clientX}px`;
+		laserElement.style.top = `${e.clientY}px`;
+	}
+}
+
+function removeLaserPointer() {
+	if (laserElement) {
+		document.removeEventListener("mousemove", updateLaserPosition);
+		laserElement.remove();
+		laserElement = null;
+	}
+}
+
+// 聚光灯功能
+function toggleSpotlight() {
+	spotlightEnabled = !spotlightEnabled;
+
+	// 更新设置并触发事件
+	const saved = localStorage.getItem("effectsSettings");
+	const settings = saved ? JSON.parse(saved) : {};
+	settings.spotlightEnabled = spotlightEnabled;
+	localStorage.setItem("effectsSettings", JSON.stringify(settings));
+
+	window.dispatchEvent(
+		new CustomEvent("effectsSettingsChanged", {
+			detail: settings,
+		}),
+	);
+}
+
+onDestroy(() => {
+	removeLaserPointer();
+});
 </script>
 
 <div class="post-actions">

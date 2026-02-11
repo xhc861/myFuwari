@@ -1,195 +1,216 @@
 <script lang="ts">
-  import { onMount, onDestroy } from 'svelte';
-  
-  let fontSize = 16;
-  let lineHeight = 1.75;
-  let fontFamily = 'default';
-  let showSettings = false;
-  let settingsElement: HTMLDivElement;
-  
-  // 无障碍阅读功能
-  let accessibilityMode = false;
-  let highContrast = false;
-  let focusMode = false;
-  
-  const fontOptions = [
-    { value: 'default', label: '默认字体' },
-    { value: 'serif', label: '衬线体', family: 'Georgia, "Times New Roman", serif' },
-    { value: 'sans-serif', label: '无衬线体', family: 'Arial, Helvetica, sans-serif' },
-    { value: 'monospace', label: '等宽字体', family: '"Courier New", Courier, monospace' },
-    { value: 'kai', label: '楷体', family: 'KaiTi, STKaiti, "AR PL UKai CN", serif' },
-    { value: 'song', label: '宋体', family: 'SimSun, STSong, "AR PL UMing CN", serif' }
-  ];
-  
-  onMount(() => {
-    const savedFontSize = localStorage.getItem('readingFontSize');
-    const savedLineHeight = localStorage.getItem('readingLineHeight');
-    const savedFontFamily = localStorage.getItem('readingFontFamily');
-    const savedAccessibilityMode = localStorage.getItem('accessibilityMode');
-    const savedHighContrast = localStorage.getItem('highContrast');
-    const savedFocusMode = localStorage.getItem('focusMode');
-    
-    if (savedFontSize) fontSize = parseInt(savedFontSize);
-    if (savedLineHeight) lineHeight = parseFloat(savedLineHeight);
-    if (savedFontFamily) fontFamily = savedFontFamily;
-    if (savedAccessibilityMode) accessibilityMode = savedAccessibilityMode === 'true';
-    if (savedHighContrast) highContrast = savedHighContrast === 'true';
-    if (savedFocusMode) focusMode = savedFocusMode === 'true';
-    
-    applySettings();
-    if (accessibilityMode) applyAccessibilityMode();
-    if (highContrast) applyHighContrast();
-    if (focusMode) applyFocusMode();
-  });
-  
-  function applySettings() {
-    const content = document.querySelector('.markdown-content');
-    if (content) {
-      (content as HTMLElement).style.fontSize = `${fontSize}px`;
-      (content as HTMLElement).style.lineHeight = `${lineHeight}`;
-      
-      // 应用字体
-      const selectedFont = fontOptions.find(f => f.value === fontFamily);
-      if (selectedFont && selectedFont.family) {
-        (content as HTMLElement).style.fontFamily = selectedFont.family;
-      } else {
-        (content as HTMLElement).style.fontFamily = '';
-      }
-    }
-    
-    localStorage.setItem('readingFontSize', fontSize.toString());
-    localStorage.setItem('readingLineHeight', lineHeight.toString());
-    localStorage.setItem('readingFontFamily', fontFamily);
-  }
-  
-  function increaseFontSize() {
-    if (fontSize < 24) {
-      fontSize += 2;
-      applySettings();
-    }
-  }
-  
-  function decreaseFontSize() {
-    if (fontSize > 12) {
-      fontSize -= 2;
-      applySettings();
-    }
-  }
-  
-  function increaseLineHeight() {
-    if (lineHeight < 2.5) {
-      lineHeight += 0.25;
-      applySettings();
-    }
-  }
-  
-  function decreaseLineHeight() {
-    if (lineHeight > 1.25) {
-      lineHeight -= 0.25;
-      applySettings();
-    }
-  }
-  
-  function resetSettings() {
-    fontSize = 16;
-    lineHeight = 1.75;
-    fontFamily = 'default';
-    applySettings();
-  }
-  
-  function toggleSettings() {
-    showSettings = !showSettings;
-  }
-  
-  function handleKeydown(event: KeyboardEvent) {
-    if (event.key === 'Escape' && showSettings) {
-      toggleSettings();
-    }
-  }
-  
-  // 无障碍阅读功能
-  function toggleAccessibilityMode() {
-    accessibilityMode = !accessibilityMode;
-    localStorage.setItem('accessibilityMode', accessibilityMode.toString());
-    
-    if (accessibilityMode) {
-      applyAccessibilityMode();
-    } else {
-      removeAccessibilityMode();
-    }
-  }
-  
-  function applyAccessibilityMode() {
-    const content = document.querySelector('.markdown-content');
-    if (content) {
-      (content as HTMLElement).classList.add('accessibility-mode');
-    }
-  }
-  
-  function removeAccessibilityMode() {
-    const content = document.querySelector('.markdown-content');
-    if (content) {
-      (content as HTMLElement).classList.remove('accessibility-mode');
-    }
-  }
-  
-  function toggleHighContrast() {
-    highContrast = !highContrast;
-    localStorage.setItem('highContrast', highContrast.toString());
-    
-    if (highContrast) {
-      applyHighContrast();
-    } else {
-      removeHighContrast();
-    }
-  }
-  
-  function applyHighContrast() {
-    document.body.classList.add('high-contrast-mode');
-  }
-  
-  function removeHighContrast() {
-    document.body.classList.remove('high-contrast-mode');
-  }
-  
-  function toggleFocusMode() {
-    focusMode = !focusMode;
-    localStorage.setItem('focusMode', focusMode.toString());
-    
-    if (focusMode) {
-      applyFocusMode();
-    } else {
-      removeFocusMode();
-    }
-  }
-  
-  function applyFocusMode() {
-    const content = document.querySelector('.markdown-content');
-    if (content) {
-      (content as HTMLElement).classList.add('focus-mode');
-    }
-  }
-  
-  function removeFocusMode() {
-    const content = document.querySelector('.markdown-content');
-    if (content) {
-      (content as HTMLElement).classList.remove('focus-mode');
-    }
-  }
-  
-  // 当设置面板显示时，将其移动到 body 并锁定滚动
-  $: if (showSettings && settingsElement) {
-    document.body.appendChild(settingsElement);
-    document.body.style.overflow = 'hidden';
-  } else if (!showSettings && typeof document !== 'undefined') {
-    document.body.style.overflow = '';
-  }
-  
-  onDestroy(() => {
-    if (typeof document !== 'undefined') {
-      document.body.style.overflow = '';
-    }
-  });
+import { onDestroy, onMount } from "svelte";
+
+let fontSize = 16;
+let lineHeight = 1.75;
+let fontFamily = "default";
+let showSettings = false;
+let settingsElement: HTMLDivElement;
+
+// 无障碍阅读功能
+let accessibilityMode = false;
+let highContrast = false;
+let focusMode = false;
+
+const fontOptions = [
+	{ value: "default", label: "默认字体" },
+	{
+		value: "serif",
+		label: "衬线体",
+		family: 'Georgia, "Times New Roman", serif',
+	},
+	{
+		value: "sans-serif",
+		label: "无衬线体",
+		family: "Arial, Helvetica, sans-serif",
+	},
+	{
+		value: "monospace",
+		label: "等宽字体",
+		family: '"Courier New", Courier, monospace',
+	},
+	{
+		value: "kai",
+		label: "楷体",
+		family: 'KaiTi, STKaiti, "AR PL UKai CN", serif',
+	},
+	{
+		value: "song",
+		label: "宋体",
+		family: 'SimSun, STSong, "AR PL UMing CN", serif',
+	},
+];
+
+onMount(() => {
+	const savedFontSize = localStorage.getItem("readingFontSize");
+	const savedLineHeight = localStorage.getItem("readingLineHeight");
+	const savedFontFamily = localStorage.getItem("readingFontFamily");
+	const savedAccessibilityMode = localStorage.getItem("accessibilityMode");
+	const savedHighContrast = localStorage.getItem("highContrast");
+	const savedFocusMode = localStorage.getItem("focusMode");
+
+	if (savedFontSize) fontSize = Number.parseInt(savedFontSize, 10);
+	if (savedLineHeight) lineHeight = Number.parseFloat(savedLineHeight);
+	if (savedFontFamily) fontFamily = savedFontFamily;
+	if (savedAccessibilityMode)
+		accessibilityMode = savedAccessibilityMode === "true";
+	if (savedHighContrast) highContrast = savedHighContrast === "true";
+	if (savedFocusMode) focusMode = savedFocusMode === "true";
+
+	applySettings();
+	if (accessibilityMode) applyAccessibilityMode();
+	if (highContrast) applyHighContrast();
+	if (focusMode) applyFocusMode();
+});
+
+function applySettings() {
+	const content = document.querySelector(".markdown-content");
+	if (content) {
+		(content as HTMLElement).style.fontSize = `${fontSize}px`;
+		(content as HTMLElement).style.lineHeight = `${lineHeight}`;
+
+		// 应用字体
+		const selectedFont = fontOptions.find((f) => f.value === fontFamily);
+		if (selectedFont?.family) {
+			(content as HTMLElement).style.fontFamily = selectedFont.family;
+		} else {
+			(content as HTMLElement).style.fontFamily = "";
+		}
+	}
+
+	localStorage.setItem("readingFontSize", fontSize.toString());
+	localStorage.setItem("readingLineHeight", lineHeight.toString());
+	localStorage.setItem("readingFontFamily", fontFamily);
+}
+
+function increaseFontSize() {
+	if (fontSize < 24) {
+		fontSize += 2;
+		applySettings();
+	}
+}
+
+function decreaseFontSize() {
+	if (fontSize > 12) {
+		fontSize -= 2;
+		applySettings();
+	}
+}
+
+function increaseLineHeight() {
+	if (lineHeight < 2.5) {
+		lineHeight += 0.25;
+		applySettings();
+	}
+}
+
+function decreaseLineHeight() {
+	if (lineHeight > 1.25) {
+		lineHeight -= 0.25;
+		applySettings();
+	}
+}
+
+function resetSettings() {
+	fontSize = 16;
+	lineHeight = 1.75;
+	fontFamily = "default";
+	applySettings();
+}
+
+function toggleSettings() {
+	showSettings = !showSettings;
+}
+
+function handleKeydown(event: KeyboardEvent) {
+	if (event.key === "Escape" && showSettings) {
+		toggleSettings();
+	}
+}
+
+// 无障碍阅读功能
+function toggleAccessibilityMode() {
+	accessibilityMode = !accessibilityMode;
+	localStorage.setItem("accessibilityMode", accessibilityMode.toString());
+
+	if (accessibilityMode) {
+		applyAccessibilityMode();
+	} else {
+		removeAccessibilityMode();
+	}
+}
+
+function applyAccessibilityMode() {
+	const content = document.querySelector(".markdown-content");
+	if (content) {
+		(content as HTMLElement).classList.add("accessibility-mode");
+	}
+}
+
+function removeAccessibilityMode() {
+	const content = document.querySelector(".markdown-content");
+	if (content) {
+		(content as HTMLElement).classList.remove("accessibility-mode");
+	}
+}
+
+function toggleHighContrast() {
+	highContrast = !highContrast;
+	localStorage.setItem("highContrast", highContrast.toString());
+
+	if (highContrast) {
+		applyHighContrast();
+	} else {
+		removeHighContrast();
+	}
+}
+
+function applyHighContrast() {
+	document.body.classList.add("high-contrast-mode");
+}
+
+function removeHighContrast() {
+	document.body.classList.remove("high-contrast-mode");
+}
+
+function toggleFocusMode() {
+	focusMode = !focusMode;
+	localStorage.setItem("focusMode", focusMode.toString());
+
+	if (focusMode) {
+		applyFocusMode();
+	} else {
+		removeFocusMode();
+	}
+}
+
+function applyFocusMode() {
+	const content = document.querySelector(".markdown-content");
+	if (content) {
+		(content as HTMLElement).classList.add("focus-mode");
+	}
+}
+
+function removeFocusMode() {
+	const content = document.querySelector(".markdown-content");
+	if (content) {
+		(content as HTMLElement).classList.remove("focus-mode");
+	}
+}
+
+// 当设置面板显示时，将其移动到 body 并锁定滚动
+$: if (showSettings && settingsElement) {
+	document.body.appendChild(settingsElement);
+	document.body.style.overflow = "hidden";
+} else if (!showSettings && typeof document !== "undefined") {
+	document.body.style.overflow = "";
+}
+
+onDestroy(() => {
+	if (typeof document !== "undefined") {
+		document.body.style.overflow = "";
+	}
+});
 </script>
 
 <svelte:window on:keydown={handleKeydown} />

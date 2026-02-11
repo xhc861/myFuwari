@@ -1,11 +1,11 @@
 <script lang="ts">
-  import CalendarModule from './CalendarModule.svelte';
-  import CountdownModule from './CountdownModule.svelte';
-  import MicroNewsModule from './MicroNewsModule.svelte';
-  import TodoModule from './TodoModule.svelte';
-  import ScoreboardModule from './ScoreboardModule.svelte';
-  import ExtraFeaturesModule from './ExtraFeaturesModule.svelte';
-  import UABadge from '../UABadge.svelte';
+import UABadge from "../UABadge.svelte";
+import CalendarModule from "./CalendarModule.svelte";
+import CountdownModule from "./CountdownModule.svelte";
+import ExtraFeaturesModule from "./ExtraFeaturesModule.svelte";
+import MicroNewsModule from "./MicroNewsModule.svelte";
+import ScoreboardModule from "./ScoreboardModule.svelte";
+import TodoModule from "./TodoModule.svelte";
 </script>
 
 <div class="dashboard-container">

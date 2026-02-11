@@ -1,42 +1,42 @@
 <script lang="ts">
-  import { onMount } from 'svelte';
+import { onMount } from "svelte";
 
-  interface UAData {
-    address: string;
-    browser: string;
-    browserVersion: string;
-    deviceType: string;
-    ip: string;
-    os: string;
-  }
+interface UAData {
+	address: string;
+	browser: string;
+	browserVersion: string;
+	deviceType: string;
+	ip: string;
+	os: string;
+}
 
-  let uaData: UAData | null = null;
-  let loading = true;
-  let error = false;
+let uaData: UAData | null = null;
+let loading = true;
+let error = false;
 
-  onMount(async () => {
-    // 确保在客户端执行
-    if (typeof window === 'undefined') {
-      loading = false;
-      return;
-    }
-    
-    try {
-      const response = await fetch('https://v2.xxapi.cn/api/ua');
-      const result = await response.json();
-      
-      if (result.code === 200 && result.data) {
-        uaData = result.data;
-      } else {
-        error = true;
-      }
-    } catch (e) {
-      console.warn('UA API 获取失败:', e);
-      error = true;
-    } finally {
-      loading = false;
-    }
-  });
+onMount(async () => {
+	// 确保在客户端执行
+	if (typeof window === "undefined") {
+		loading = false;
+		return;
+	}
+
+	try {
+		const response = await fetch("https://v2.xxapi.cn/api/ua");
+		const result = await response.json();
+
+		if (result.code === 200 && result.data) {
+			uaData = result.data;
+		} else {
+			error = true;
+		}
+	} catch (e) {
+		console.warn("UA API 获取失败:", e);
+		error = true;
+	} finally {
+		loading = false;
+	}
+});
 </script>
 
 {#if !loading && !error && uaData}

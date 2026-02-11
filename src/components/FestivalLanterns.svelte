@@ -1,44 +1,49 @@
 <script lang="ts">
-  import { onMount } from 'svelte';
-  
-  export let show = false;
-  export let text1 = '元';
-  export let text2 = '旦';
-  export let text3 = '快';
-  export let text4 = '乐';
-  
-  onMount(() => {
-    // 加载初始设置
-    const saved = localStorage.getItem('effectsSettings');
-    if (saved) {
-      const settings = JSON.parse(saved);
-      show = settings.lanternsEnabled ?? false;
-      if (settings.lanternText) {
-        text1 = settings.lanternText.text1;
-        text2 = settings.lanternText.text2;
-        text3 = settings.lanternText.text3;
-        text4 = settings.lanternText.text4;
-      }
-    }
-    
-    // 监听设置变化
-    const handleSettingsChange = (event: CustomEvent) => {
-      show = event.detail.lanternsEnabled;
-      if (event.detail.lanternText) {
-        text1 = event.detail.lanternText.text1;
-        text2 = event.detail.lanternText.text2;
-        text3 = event.detail.lanternText.text3;
-        text4 = event.detail.lanternText.text4;
-      }
-    };
-    
-    window.addEventListener('effectsSettingsChanged', handleSettingsChange as EventListener);
-    
-    return () => {
-      window.removeEventListener('effectsSettingsChanged', handleSettingsChange as EventListener);
-    };
-  });
+import { onMount } from "svelte";
 
+export let show = false;
+export let text1 = "元";
+export let text2 = "旦";
+export let text3 = "快";
+export let text4 = "乐";
+
+onMount(() => {
+	// 加载初始设置
+	const saved = localStorage.getItem("effectsSettings");
+	if (saved) {
+		const settings = JSON.parse(saved);
+		show = settings.lanternsEnabled ?? false;
+		if (settings.lanternText) {
+			text1 = settings.lanternText.text1;
+			text2 = settings.lanternText.text2;
+			text3 = settings.lanternText.text3;
+			text4 = settings.lanternText.text4;
+		}
+	}
+
+	// 监听设置变化
+	const handleSettingsChange = (event: CustomEvent) => {
+		show = event.detail.lanternsEnabled;
+		if (event.detail.lanternText) {
+			text1 = event.detail.lanternText.text1;
+			text2 = event.detail.lanternText.text2;
+			text3 = event.detail.lanternText.text3;
+			text4 = event.detail.lanternText.text4;
+		}
+	};
+
+	window.addEventListener(
+		"effectsSettingsChanged",
+		handleSettingsChange as EventListener,
+	);
+
+	return () => {
+		window.removeEventListener(
+			"effectsSettingsChanged",
+			handleSettingsChange as EventListener,
+		);
+	};
+});
 </script>
 
 {#if show}

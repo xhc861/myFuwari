@@ -1,7 +1,7 @@
 declare global {
-  interface Window {
-    echarts: any;
-  }
+	interface Window {
+		echarts: typeof import("echarts");
+	}
 }
 
 export {};

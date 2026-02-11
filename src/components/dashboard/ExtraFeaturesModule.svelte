@@ -1,146 +1,146 @@
 <script lang="ts">
-  import { onMount } from 'svelte';
-  import { fade, scale } from 'svelte/transition';
+import { onMount } from "svelte";
+import { fade, scale } from "svelte/transition";
 
-  interface LotteryResponse {
-    code: number;
-    msg: string;
-    data: {
-      content: string;
-      id: number;
-      pic: string;
-      poem: string;
-      title: string;
-    };
-  }
+interface LotteryResponse {
+	code: number;
+	msg: string;
+	data: {
+		content: string;
+		id: number;
+		pic: string;
+		poem: string;
+		title: string;
+	};
+}
 
-  interface EnglishWordResponse {
-    code: number;
-    msg: string;
-    data: {
-      word: string;
-      ukphone: string;
-      usphone: string;
-      ukspeech: string;
-      usspeech: string;
-      translations: Array<{
-        pos: string;
-        tran_cn: string;
-      }>;
-      sentences: Array<{
-        s_content: string;
-        s_cn: string;
-      }>;
-    };
-  }
+interface EnglishWordResponse {
+	code: number;
+	msg: string;
+	data: {
+		word: string;
+		ukphone: string;
+		usphone: string;
+		ukspeech: string;
+		usspeech: string;
+		translations: Array<{
+			pos: string;
+			tran_cn: string;
+		}>;
+		sentences: Array<{
+			s_content: string;
+			s_cn: string;
+		}>;
+	};
+}
 
-  let lottery: LotteryResponse['data'] | null = null;
-  let lotteryLoading = false;
-  let lotteryError = '';
-  let showLotteryModal = false;
+let lottery: LotteryResponse["data"] | null = null;
+let lotteryLoading = false;
+let lotteryError = "";
+let showLotteryModal = false;
 
-  let englishWord: EnglishWordResponse['data'] | null = null;
-  let englishLoading = false;
-  let englishError = '';
-  let showEnglishModal = false;
+let englishWord: EnglishWordResponse["data"] | null = null;
+let englishLoading = false;
+let englishError = "";
+let showEnglishModal = false;
 
-  let audioPlaying = false;
+let audioPlaying = false;
 
-  onMount(() => {
-    // 确保组件在客户端加载
-    if (typeof window === 'undefined') return;
-  });
+onMount(() => {
+	// 确保组件在客户端加载
+	if (typeof window === "undefined") return;
+});
 
-  async function drawLottery() {
-    // 确保在客户端执行
-    if (typeof window === 'undefined') return;
-    
-    lotteryLoading = true;
-    lotteryError = '';
-    lottery = null;
+async function drawLottery() {
+	// 确保在客户端执行
+	if (typeof window === "undefined") return;
 
-    try {
-      const response = await fetch('https://v2.xxapi.cn/api/wenchangdijunrandom');
-      const data: LotteryResponse = await response.json();
-      
-      if (data.code === 200 && data.data) {
-        lottery = data.data;
-        showLotteryModal = true;
-      } else {
-        lotteryError = data.msg || '抽签失败';
-      }
-    } catch (e) {
-      lotteryError = '网络请求失败';
-      console.error('Failed to draw lottery:', e);
-    } finally {
-      lotteryLoading = false;
-    }
-  }
+	lotteryLoading = true;
+	lotteryError = "";
+	lottery = null;
 
-  async function fetchEnglishWord() {
-    // 确保在客户端执行
-    if (typeof window === 'undefined') return;
-    
-    englishLoading = true;
-    englishError = '';
-    englishWord = null;
+	try {
+		const response = await fetch("https://v2.xxapi.cn/api/wenchangdijunrandom");
+		const data: LotteryResponse = await response.json();
 
-    try {
-      const response = await fetch('https://v2.xxapi.cn/api/randomenglishwords');
-      const data: EnglishWordResponse = await response.json();
-      
-      if (data.code === 200 && data.data) {
-        englishWord = data.data;
-        showEnglishModal = true;
-      } else {
-        englishError = data.msg || '获取单词失败';
-      }
-    } catch (e) {
-      englishError = '网络请求失败';
-      console.error('Failed to fetch English word:', e);
-    } finally {
-      englishLoading = false;
-    }
-  }
+		if (data.code === 200 && data.data) {
+			lottery = data.data;
+			showLotteryModal = true;
+		} else {
+			lotteryError = data.msg || "抽签失败";
+		}
+	} catch (e) {
+		lotteryError = "网络请求失败";
+		console.error("Failed to draw lottery:", e);
+	} finally {
+		lotteryLoading = false;
+	}
+}
 
-  function closeLotteryModal() {
-    showLotteryModal = false;
-  }
+async function fetchEnglishWord() {
+	// 确保在客户端执行
+	if (typeof window === "undefined") return;
 
-  function closeEnglishModal() {
-    showEnglishModal = false;
-  }
+	englishLoading = true;
+	englishError = "";
+	englishWord = null;
 
-  function handleKeydown(event: KeyboardEvent) {
-    if (event.key === 'Escape') {
-      if (showLotteryModal) closeLotteryModal();
-      if (showEnglishModal) closeEnglishModal();
-    }
-  }
+	try {
+		const response = await fetch("https://v2.xxapi.cn/api/randomenglishwords");
+		const data: EnglishWordResponse = await response.json();
 
-  function playPronunciation(url: string, type: 'uk' | 'us') {
-    // 确保在客户端执行
-    if (typeof window === 'undefined') return;
-    if (!url) return;
-    if (audioPlaying) return;
-    
-    audioPlaying = true;
-    const audio = new Audio(url);
-    
-    audio.onended = () => {
-      audioPlaying = false;
-    };
-    
-    audio.onerror = () => {
-      audioPlaying = false;
-      console.error(`Failed to play ${type} pronunciation`);
-    };
-    
-    audio.play().catch(err => {
-      audioPlaying = false;
-      console.error('Audio play failed:', err);
-    });
-  }
+		if (data.code === 200 && data.data) {
+			englishWord = data.data;
+			showEnglishModal = true;
+		} else {
+			englishError = data.msg || "获取单词失败";
+		}
+	} catch (e) {
+		englishError = "网络请求失败";
+		console.error("Failed to fetch English word:", e);
+	} finally {
+		englishLoading = false;
+	}
+}
+
+function closeLotteryModal() {
+	showLotteryModal = false;
+}
+
+function closeEnglishModal() {
+	showEnglishModal = false;
+}
+
+function handleKeydown(event: KeyboardEvent) {
+	if (event.key === "Escape") {
+		if (showLotteryModal) closeLotteryModal();
+		if (showEnglishModal) closeEnglishModal();
+	}
+}
+
+function playPronunciation(url: string, type: "uk" | "us") {
+	// 确保在客户端执行
+	if (typeof window === "undefined") return;
+	if (!url) return;
+	if (audioPlaying) return;
+
+	audioPlaying = true;
+	const audio = new Audio(url);
+
+	audio.onended = () => {
+		audioPlaying = false;
+	};
+
+	audio.onerror = () => {
+		audioPlaying = false;
+		console.error(`Failed to play ${type} pronunciation`);
+	};
+
+	audio.play().catch((err) => {
+		audioPlaying = false;
+		console.error("Audio play failed:", err);
+	});
+}
 </script>
 
 <svelte:window on:keydown={handleKeydown} />

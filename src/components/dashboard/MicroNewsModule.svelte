@@ -70,8 +70,17 @@ async function loadMicroNews() {
 		const data = await response.json();
 		console.log("[MicroNewsModule] 加载的数据:", data);
 		// 按 ID 倒序排列（最新的在前面），并添加默认值
+		interface RawMicroNews {
+			id: string;
+			title: string;
+			content: string;
+			date: string;
+			sender: string;
+			time?: string;
+			priority?: string;
+		}
 		allNews = data
-			.map((item: any) => ({
+			.map((item: RawMicroNews) => ({
 				...item,
 				priority: item.priority || "medium",
 				time: item.time || "",
