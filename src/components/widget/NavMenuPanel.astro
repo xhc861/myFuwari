@@ -44,16 +44,17 @@ function applyNavbarSettingsMobile() {
                     const url = link.getAttribute('data-link-url');
                     // 只处理内部链接
                     if (url && !link.hasAttribute('target')) {
+                        const htmlLink = link as HTMLElement;
                         if (url === '/' || url.includes('home')) {
-                            link.style.display = settings.navbarLinks.home ? '' : 'none';
+                            htmlLink.style.display = settings.navbarLinks.home ? '' : 'none';
                         } else if (url.includes('archive')) {
-                            link.style.display = settings.navbarLinks.archive ? '' : 'none';
+                            htmlLink.style.display = settings.navbarLinks.archive ? '' : 'none';
                         } else if (url.includes('about')) {
-                            link.style.display = settings.navbarLinks.about ? '' : 'none';
+                            htmlLink.style.display = settings.navbarLinks.about ? '' : 'none';
                         } else if (url.includes('friends')) {
-                            link.style.display = settings.navbarLinks.friends ? '' : 'none';
+                            htmlLink.style.display = settings.navbarLinks.friends ? '' : 'none';
                         } else if (url.includes('gallery')) {
-                            link.style.display = settings.navbarLinks.gallery ? '' : 'none';
+                            htmlLink.style.display = settings.navbarLinks.gallery ? '' : 'none';
                         }
                     }
                 });

@@ -2,11 +2,6 @@
 import Icon from "@iconify/svelte";
 import { onMount } from "svelte";
 
-// Props 接口，用于 Astro 类型检查
-interface Props {
-	'client:only'?: string;
-}
-
 interface NotificationItem {
 	id: string;
 	message: string;

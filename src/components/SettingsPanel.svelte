@@ -33,7 +33,7 @@
   
   let activeTab: 'effects' | 'music' | 'navbar' = 'effects';
   
-  const VERSION = '0.9.1-R TESTA1 Freewheel';
+  const VERSION = 'v0.9.2 Alpha TEST2';
   
   onMount(() => {
     loadSettings();

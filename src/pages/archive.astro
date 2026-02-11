@@ -21,6 +21,7 @@ const postsForArchive = sortedPostsList.map((post) => ({
 ---
 
 <MainGridLayout title={i18n(I18nKey.archive)}>
+    <!-- @ts-ignore -->
     <MicroNewsAnnouncement client:load />
     <ArchivePanel tags={[]} categories={[]} sortedPosts={postsForArchive} client:only="svelte"></ArchivePanel>
 </MainGridLayout>

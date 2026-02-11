@@ -14,6 +14,9 @@
   let laserPointerEnabled = false;
   let laserElement: HTMLDivElement | null = null;
   
+  // 聚光灯功能
+  let spotlightEnabled = false;
+  
   function addFavorite() {
     const isMac = navigator.platform.toUpperCase().indexOf('MAC') >= 0;
     const shortcut = isMac ? 'Cmd+D' : 'Ctrl+D';
@@ -76,6 +79,21 @@
     }
   }
   
+  // 聚光灯功能
+  function toggleSpotlight() {
+    spotlightEnabled = !spotlightEnabled;
+    
+    // 更新设置并触发事件
+    const saved = localStorage.getItem('effectsSettings');
+    const settings = saved ? JSON.parse(saved) : {};
+    settings.spotlightEnabled = spotlightEnabled;
+    localStorage.setItem('effectsSettings', JSON.stringify(settings));
+    
+    window.dispatchEvent(new CustomEvent('effectsSettingsChanged', {
+      detail: settings
+    }));
+  }
+  
   onDestroy(() => {
     removeLaserPointer();
   });
@@ -127,13 +145,27 @@
     class="action-btn tool-btn {laserPointerEnabled ? 'active' : ''}" 
     on:click={toggleLaserPointer}
     aria-label="激光笔"
-    title="激光笔 (Ctrl+Shift+L)"
+    title="激光笔"
   >
     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
       <circle cx="12" cy="12" r="2" fill="currentColor"></circle>
       <path d="M12 2v4m0 12v4M4.93 4.93l2.83 2.83m8.48 8.48l2.83 2.83M2 12h4m12 0h4M4.93 19.07l2.83-2.83m8.48-8.48l2.83-2.83"></path>
     </svg>
     <span>激光笔</span>
+  </button>
+  
+  <button 
+    class="action-btn tool-btn {spotlightEnabled ? 'active' : ''}" 
+    on:click={toggleSpotlight}
+    aria-label="聚光灯"
+    title="聚光灯"
+  >
+    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="12" cy="12" r="10"></circle>
+      <circle cx="12" cy="12" r="6"></circle>
+      <circle cx="12" cy="12" r="2" fill="currentColor"></circle>
+    </svg>
+    <span>聚光灯</span>
   </button>
 </div>
 
@@ -184,14 +216,6 @@
   
   .action-btn svg {
     flex-shrink: 0;
-  }
-  
-  .divider {
-    width: 1px;
-    height: 2rem;
-    background: var(--line-divider);
-    opacity: 0.5;
-    align-self: center;
   }
   
   .tool-btn.active {
