@@ -9,7 +9,7 @@ interface AnnouncementConfig {
 	icon?: string;
 	closeable?: boolean;
 	critical?: boolean;
-	link?: { text: string; url: string } | null;
+	links?: { text: string; url: string }[] | null;
 }
 
 let config: AnnouncementConfig | null = $state(null);
@@ -80,16 +80,22 @@ function closeAnnouncement() {
                     <p class="announcement-message text-sm md:text-base leading-relaxed" class:critical-text={config.critical} class:normal-text={!config.critical}>
                         {config.content}
                     </p>
-                    {#if config.link}
-                        <a 
-                            href={config.link.url}
-                            class="announcement-link inline-flex items-center gap-1 mt-3 text-sm md:text-base transition-colors font-medium"
-                            class:critical-link={config.critical}
-                            class:normal-link={!config.critical}
-                        >
-                            {config.link.text}
-                            <Icon icon="fa6-solid:arrow-right" class="text-xs" />
-                        </a>
+                    {#if config.links && config.links.length > 0}
+                        <div class="announcement-links flex flex-wrap gap-3 mt-3">
+                            {#each config.links as link}
+                                <a 
+                                    href={link.url}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    class="announcement-link inline-flex items-center gap-1 text-sm md:text-base transition-colors font-medium"
+                                    class:critical-link={config.critical}
+                                    class:normal-link={!config.critical}
+                                >
+                                    {link.text}
+                                    <Icon icon="fa6-solid:arrow-right" class="text-xs" />
+                                </a>
+                            {/each}
+                        </div>
                     {/if}
                 </div>
 
