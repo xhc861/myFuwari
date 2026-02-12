@@ -1,5 +1,5 @@
 <script lang="ts">
-import { onMount } from "svelte";
+import { onMount, onDestroy } from "svelte";
 import { fade, scale } from "svelte/transition";
 
 interface LotteryResponse {
@@ -45,10 +45,34 @@ let englishError = "";
 let showEnglishModal = false;
 
 let audioPlaying = false;
+let lotteryModalElement: HTMLDivElement;
+let englishModalElement: HTMLDivElement;
 
 onMount(() => {
 	// 确保组件在客户端加载
 	if (typeof window === "undefined") return;
+});
+
+// 当抽签模态框显示时，将其移动到 body 并锁定滚动
+$: if (showLotteryModal && lotteryModalElement) {
+	document.body.appendChild(lotteryModalElement);
+	document.body.style.overflow = "hidden";
+} else if (!showLotteryModal && typeof document !== "undefined") {
+	document.body.style.overflow = "";
+}
+
+// 当英语单词模态框显示时，将其移动到 body 并锁定滚动
+$: if (showEnglishModal && englishModalElement) {
+	document.body.appendChild(englishModalElement);
+	document.body.style.overflow = "hidden";
+} else if (!showEnglishModal && typeof document !== "undefined") {
+	document.body.style.overflow = "";
+}
+
+onDestroy(() => {
+	if (typeof document !== "undefined") {
+		document.body.style.overflow = "";
+	}
 });
 
 async function drawLottery() {
@@ -145,58 +169,19 @@ function playPronunciation(url: string, type: "uk" | "us") {
 
 <svelte:window on:keydown={handleKeydown} />
 
-<div class="extra-features-container">
-  <!-- 抽签 -->
-  <div class="feature-card card-base">
-    <h3 class="feature-title">文昌帝君灵签-抽个签吧</h3>
-    <button 
-      type="button"
-      class="feature-btn" 
-      on:click={drawLottery}
-      disabled={lotteryLoading}
-    >
-      {lotteryLoading ? '抽签中...' : '抽一签'}
-    </button>
-    
-    {#if lotteryError}
-      <div class="error-message">{lotteryError}</div>
-    {/if}
-  </div>
-
-  <!-- 每日英语 -->
-  <div class="feature-card card-base">
-    <h3 class="feature-title">每日英语-学个单词(词组)吧</h3>
-    <button 
-      type="button"
-      class="feature-btn" 
-      on:click={fetchEnglishWord}
-      disabled={englishLoading}
-    >
-      {englishLoading ? '加载中...' : '学一个'}
-    </button>
-    
-    {#if englishError}
-      <div class="error-message">{englishError}</div>
-    {/if}
-  </div>
-</div>
-
-<!-- 抽签模态框 -->
+<!-- 抽签模态框 - 渲染到 body -->
 {#if showLotteryModal && lottery}
-  <div class="modal-portal">
-    <!-- svelte-ignore a11y-click-events-have-key-events -->
-    <!-- svelte-ignore a11y-no-static-element-interactions -->
-    <div class="modal-overlay" on:click={closeLotteryModal} transition:fade={{ duration: 200 }}>
-      <!-- svelte-ignore a11y-no-noninteractive-tabindex -->
-      <div class="modal-content" on:click|stopPropagation role="dialog" aria-modal="true" aria-labelledby="lottery-modal-title" tabindex="0" transition:scale={{ duration: 200, start: 0.95 }}>
+  <!-- svelte-ignore a11y-click-events-have-key-events -->
+  <!-- svelte-ignore a11y-no-static-element-interactions -->
+  <div 
+    bind:this={lotteryModalElement}
+    class="modal-root" 
+    on:click={closeLotteryModal}
+  >
+      <div class="modal-content" on:click|stopPropagation>
         <div class="modal-header">
-          <h2 id="lottery-modal-title" class="modal-title">{lottery.title}</h2>
-          <button type="button" class="close-button" on:click={closeLotteryModal} aria-label="关闭">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <line x1="18" y1="6" x2="6" y2="18"></line>
-              <line x1="6" y1="6" x2="18" y2="18"></line>
-            </svg>
-          </button>
+          <h2 class="modal-title">{lottery.title}</h2>
+          <button type="button" class="close-btn" on:click={closeLotteryModal} title="关闭">×</button>
         </div>
         
         <div class="modal-body">
@@ -207,26 +192,22 @@ function playPronunciation(url: string, type: "uk" | "us") {
           <div class="lottery-content">{lottery.content}</div>
         </div>
       </div>
-    </div>
   </div>
 {/if}
 
-<!-- 英语单词模态框 -->
+<!-- 英语单词模态框 - 渲染到 body -->
 {#if showEnglishModal && englishWord}
-  <div class="modal-portal">
-    <!-- svelte-ignore a11y-click-events-have-key-events -->
-    <!-- svelte-ignore a11y-no-static-element-interactions -->
-    <div class="modal-overlay" on:click={closeEnglishModal} transition:fade={{ duration: 200 }}>
-      <!-- svelte-ignore a11y-no-noninteractive-tabindex -->
-      <div class="modal-content" on:click|stopPropagation role="dialog" aria-modal="true" aria-labelledby="english-modal-title" tabindex="0" transition:scale={{ duration: 200, start: 0.95 }}>
+  <!-- svelte-ignore a11y-click-events-have-key-events -->
+  <!-- svelte-ignore a11y-no-static-element-interactions -->
+  <div 
+    bind:this={englishModalElement}
+    class="modal-root" 
+    on:click={closeEnglishModal}
+  >
+      <div class="modal-content" on:click|stopPropagation>
         <div class="modal-header">
-          <h2 id="english-modal-title" class="modal-title">{englishWord.word}</h2>
-          <button type="button" class="close-button" on:click={closeEnglishModal} aria-label="关闭">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <line x1="18" y1="6" x2="6" y2="18"></line>
-              <line x1="6" y1="6" x2="18" y2="18"></line>
-            </svg>
-          </button>
+          <h2 class="modal-title">{englishWord.word}</h2>
+          <button type="button" class="close-btn" on:click={closeEnglishModal} title="关闭">×</button>
         </div>
         
         <div class="modal-body">
@@ -286,9 +267,46 @@ function playPronunciation(url: string, type: "uk" | "us") {
           {/if}
         </div>
       </div>
-    </div>
   </div>
 {/if}
+
+<div class="extra-features-container">
+  <!-- 抽签 -->
+  <div class="feature-card card-base">
+    <h3 class="feature-title">文昌帝君灵签-抽个签吧</h3>
+    <button 
+      type="button"
+      class="feature-btn" 
+      on:click={drawLottery}
+      disabled={lotteryLoading}
+    >
+      {lotteryLoading ? '抽签中...' : '抽一签'}
+    </button>
+    
+    {#if lotteryError}
+      <div class="error-message">{lotteryError}</div>
+    {/if}
+  </div>
+
+  <!-- 每日英语 -->
+  <div class="feature-card card-base">
+    <h3 class="feature-title">每日英语-学个单词(词组)吧</h3>
+    <button 
+      type="button"
+      class="feature-btn" 
+      on:click={fetchEnglishWord}
+      disabled={englishLoading}
+    >
+      {englishLoading ? '加载中...' : '学一个'}
+    </button>
+    
+    {#if englishError}
+      <div class="error-message">{englishError}</div>
+    {/if}
+  </div>
+</div>
+
+
 
 <style>
   .extra-features-container {
@@ -349,87 +367,164 @@ function playPronunciation(url: string, type: "uk" | "us") {
     font-size: 0.875rem;
   }
 
-  /* 模态框样式 */
-  .modal-portal {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    z-index: 9999;
+  /* 全屏模态框样式 */
+  .modal-root {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    width: 100vw !important;
+    height: 100vh !important;
+    z-index: 999999 !important;
+    background: rgba(0, 0, 0, 0.6) !important;
+    backdrop-filter: blur(12px) !important;
+    -webkit-backdrop-filter: blur(12px) !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    padding: 1rem !important;
+    animation: fadeIn 0.2s ease-out !important;
+    overflow-y: auto !important;
   }
 
-  .modal-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: rgba(0, 0, 0, 0.5);
-    display: flex;
-    align-items: flex-end;
-    justify-content: center;
-    padding: 1rem;
-    padding-bottom: 2rem;
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
   }
 
   .modal-content {
-    background: var(--card-bg);
-    border-radius: var(--radius-large);
+    background: white;
+    border-radius: 1rem;
     max-width: 700px;
     width: 100%;
-    max-height: 79vh;
+    max-height: 90vh;
     display: flex;
     flex-direction: column;
-    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
-    border: 1px solid var(--line-divider);
+    box-shadow: 0 25px 80px rgba(0, 0, 0, 0.4);
+    animation: slideUp 0.3s ease-out;
+    overflow: hidden;
+    position: relative;
+  }
+
+  :global(.dark) .modal-content {
+    background: oklch(0.23 0.01 var(--hue));
+    color: rgba(255, 255, 255, 0.95);
+  }
+
+  @keyframes slideUp {
+    from {
+      opacity: 0;
+      transform: translateY(30px) scale(0.95);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
   }
 
   .modal-header {
+    background: linear-gradient(135deg, var(--primary) 0%, oklch(0.65 0.14 calc(var(--hue) + 20)) 100%);
+    padding: 1.5rem;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 1.5rem;
-    border-bottom: 1px solid var(--line-divider);
+    color: white;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+  }
+
+  .modal-header::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(45deg, transparent 30%, rgba(255, 255, 255, 0.1) 50%, transparent 70%);
+    animation: headerShine 3s infinite;
+    pointer-events: none;
+  }
+
+  @keyframes headerShine {
+    0% {
+      transform: translateX(-100%);
+    }
+    100% {
+      transform: translateX(100%);
+    }
   }
 
   .modal-title {
     font-size: 1.5rem;
     font-weight: 600;
-    color: var(--primary);
     margin: 0;
+    color: white;
+    position: relative;
+    z-index: 1;
   }
 
-  :global(.dark) .modal-title {
-    color: oklch(0.75 0.14 var(--hue));
-  }
-
-  .close-button {
-    background: none;
+  .close-btn {
+    background: rgba(255, 255, 255, 0.2);
     border: none;
+    color: white;
+    width: 2rem;
+    height: 2rem;
+    border-radius: 50%;
     cursor: pointer;
-    padding: 0.5rem;
+    font-size: 1.5rem;
     display: flex;
     align-items: center;
     justify-content: center;
-    border-radius: 0.375rem;
-    transition: background 0.2s;
+    transition: all 0.3s ease;
+    line-height: 1;
+    position: relative;
+    z-index: 1;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
   }
 
-  :global(.dark) .close-button {
-    color: rgba(255, 255, 255, 0.9);
-  }
-
-  .close-button:hover {
-    background: var(--btn-card-bg-hover);
+  .close-btn:hover {
+    background: rgba(255, 255, 255, 0.35);
+    transform: rotate(90deg) scale(1.1);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
   }
 
   .modal-body {
-    padding: 1.5rem;
+    padding: 2rem;
     overflow-y: auto;
     flex: 1;
+  }
+
+  /* 模态框滚动条样式 */
+  .modal-body::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  .modal-body::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .modal-body::-webkit-scrollbar-thumb {
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 4px;
+    transition: background 0.2s;
+  }
+
+  .modal-body::-webkit-scrollbar-thumb:hover {
+    background: rgba(0, 0, 0, 0.3);
+  }
+
+  :global(.dark) .modal-body::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.2);
+  }
+
+  :global(.dark) .modal-body::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.3);
   }
 
   /* 抽签结果样式 */

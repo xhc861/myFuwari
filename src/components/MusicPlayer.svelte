@@ -439,7 +439,7 @@ onDestroy(() => {
   }
   
   :global(.dark) .mini-title {
-    color: rgba(255, 255, 255, 0.9);
+    color: rgba(255, 255, 255, 0.9)
   }
 
   .mini-artist {
@@ -773,7 +773,7 @@ onDestroy(() => {
   
   /* 美化滚动条 */
   .playlist-items::-webkit-scrollbar {
-    width: 5px;
+    width: 8px;
   }
   
   .playlist-items::-webkit-scrollbar-track {
@@ -781,13 +781,21 @@ onDestroy(() => {
   }
   
   .playlist-items::-webkit-scrollbar-thumb {
-    background: rgba(0, 0, 0, 0.15);
-    border-radius: 2.5px;
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 4px;
     transition: background 0.2s;
+  }
+
+  .playlist-items::-webkit-scrollbar-thumb:hover {
+    background: rgba(0, 0, 0, 0.3);
   }
   
   :global(.dark) .playlist-items::-webkit-scrollbar-thumb {
-    background: rgba(255, 255, 255, 0.15);
+    background: rgba(255, 255, 255, 0.2);
+  }
+
+  :global(.dark) .playlist-items::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.3);
   }
   
   .playlist-items::-webkit-scrollbar-thumb:hover {

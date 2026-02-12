@@ -1,6 +1,5 @@
 <script lang="ts">
-import { onMount } from "svelte";
-import { fade, scale } from "svelte/transition";
+import { onMount, onDestroy } from "svelte";
 
 interface MicroNews {
 	id: string;
@@ -15,6 +14,7 @@ interface MicroNews {
 let allNews: MicroNews[] = [];
 let displayNews: MicroNews[] = [];
 let showModal = false;
+let modalElement: HTMLDivElement;
 
 // 筛选和分页状态
 let selectedSender = "all";
@@ -153,6 +153,20 @@ function formatDateTime(dateStr: string, timeStr?: string): string {
 	// 只有日期
 	return dateStr;
 }
+
+// 当模态框显示时，将其移动到 body 并锁定滚动
+$: if (showModal && modalElement) {
+	document.body.appendChild(modalElement);
+	document.body.style.overflow = "hidden";
+} else if (!showModal && typeof document !== "undefined") {
+	document.body.style.overflow = "";
+}
+
+onDestroy(() => {
+	if (typeof document !== "undefined") {
+		document.body.style.overflow = "";
+	}
+});
 </script>
 
 <svelte:window on:keydown={handleKeydown} />
@@ -183,145 +197,141 @@ function formatDateTime(dateStr: string, timeStr?: string): string {
 
 <!-- 全局模态框 -->
 {#if showModal}
-  <div class="modal-portal">
-    <!-- svelte-ignore a11y-click-events-have-key-events -->
-    <!-- svelte-ignore a11y-no-static-element-interactions -->
-    <div class="modal-overlay" on:click={closeModal} transition:fade={{ duration: 200 }}>
-      <!-- svelte-ignore a11y-no-noninteractive-tabindex -->
-      <div class="modal-content" on:click|stopPropagation role="dialog" aria-modal="true" aria-labelledby="modal-title" tabindex="0" transition:scale={{ duration: 200, start: 0.95 }}>
-        <div class="modal-header">
-          <h2 id="modal-title" class="modal-title">所有微新闻</h2>
-          <button type="button" class="close-button" on:click={closeModal} aria-label="关闭">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <line x1="18" y1="6" x2="6" y2="18"></line>
-              <line x1="6" y1="6" x2="18" y2="18"></line>
-            </svg>
-          </button>
-        </div>
-        
-        <!-- 筛选器 -->
-        <div class="filters">
-          <div class="filter-group">
-            <label for="sender-filter">发送者：</label>
-            <select id="sender-filter" bind:value={selectedSender}>
-              <option value="all">全部</option>
-              {#each senders.filter(s => s !== 'all') as sender}
-                <option value={sender}>{sender}</option>
-              {/each}
-            </select>
-          </div>
-          
-          <div class="filter-group">
-            <label for="priority-filter">重要等级：</label>
-            <select id="priority-filter" bind:value={selectedPriority}>
-              <option value="all">全部</option>
-              <option value="high">重要</option>
-              <option value="medium">一般</option>
-              <option value="low">普通</option>
-              <option value="doing">正在做</option>
-            </select>
-          </div>
-          
-          <div class="filter-group">
-            <label for="date-filter">日期范围：</label>
-            <select id="date-filter" bind:value={selectedDateRange}>
-              <option value="all">全部</option>
-              <option value="today">今天</option>
-              <option value="week">最近一周</option>
-              <option value="month">最近一月</option>
-            </select>
-          </div>
-          
-          <div class="filter-group">
-            <label for="items-per-page">每页显示：</label>
-            <select id="items-per-page" bind:value={itemsPerPage}>
-              <option value={6}>6条</option>
-              <option value={10}>10条</option>
-              <option value={20}>20条</option>
-            </select>
-          </div>
-        </div>
-        
-        <div class="modal-body">
-          {#if paginatedNews.length > 0}
-            {#each paginatedNews as news (news.id)}
-              <div class="news-item modal-news-item">
-                <div class="news-header">
-                  <div class="news-title">{news.title}</div>
-                  <span class="priority-badge {getPriorityClass(news.priority)}">
-                    {getPriorityLabel(news.priority)}
-                  </span>
-                </div>
-                <div class="news-content">{news.content}</div>
-                <div class="news-meta">
-                  <span class="news-time">{formatDateTime(news.date, news.time)}</span>
-                  <span class="news-sender">{news.sender}</span>
-                </div>
-              </div>
+  <!-- svelte-ignore a11y-click-events-have-key-events -->
+  <!-- svelte-ignore a11y-no-static-element-interactions -->
+  <div 
+    bind:this={modalElement}
+    class="modal-root"
+    on:click={closeModal}
+  >
+    <div class="modal-content" on:click|stopPropagation>
+      <div class="modal-header">
+        <h2 class="modal-title">所有微新闻</h2>
+        <button type="button" class="close-btn" on:click={closeModal} title="关闭">×</button>
+      </div>
+      
+      <!-- 筛选器 -->
+      <div class="filters">
+        <div class="filter-group">
+          <label for="sender-filter">发送者：</label>
+          <select id="sender-filter" bind:value={selectedSender}>
+            <option value="all">全部</option>
+            {#each senders.filter(s => s !== 'all') as sender}
+              <option value={sender}>{sender}</option>
             {/each}
-          {:else}
-            <div class="no-results">没有找到符合条件的新闻</div>
-          {/if}
+          </select>
         </div>
         
-        <!-- 分页器 -->
-        {#if totalPages > 1}
-          <div class="pagination">
-            <button 
-              type="button"
-              class="page-btn" 
-              disabled={currentPage === 1}
-              on:click={() => currentPage = 1}
-            >
-              首页
-            </button>
-            <button 
-              type="button"
-              class="page-btn" 
-              disabled={currentPage === 1}
-              on:click={() => currentPage--}
-            >
-              上一页
-            </button>
-            
-            <div class="page-numbers">
-              {#each Array(totalPages) as _, i}
-                {#if i + 1 === 1 || i + 1 === totalPages || (i + 1 >= currentPage - 1 && i + 1 <= currentPage + 1)}
-                  <button 
-                    type="button"
-                    class="page-number" 
-                    class:active={currentPage === i + 1}
-                    on:click={() => currentPage = i + 1}
-                  >
-                    {i + 1}
-                  </button>
-                {:else if i + 1 === currentPage - 2 || i + 1 === currentPage + 2}
-                  <span class="page-ellipsis">...</span>
-                {/if}
-              {/each}
+        <div class="filter-group">
+          <label for="priority-filter">重要等级：</label>
+          <select id="priority-filter" bind:value={selectedPriority}>
+            <option value="all">全部</option>
+            <option value="high">重要</option>
+            <option value="medium">一般</option>
+            <option value="low">普通</option>
+            <option value="doing">正在做</option>
+          </select>
+        </div>
+        
+        <div class="filter-group">
+          <label for="date-filter">日期范围：</label>
+          <select id="date-filter" bind:value={selectedDateRange}>
+            <option value="all">全部</option>
+            <option value="today">今天</option>
+            <option value="week">最近一周</option>
+            <option value="month">最近一月</option>
+          </select>
+        </div>
+        
+        <div class="filter-group">
+          <label for="items-per-page">每页显示：</label>
+          <select id="items-per-page" bind:value={itemsPerPage}>
+            <option value={6}>6条</option>
+            <option value={10}>10条</option>
+            <option value={20}>20条</option>
+          </select>
+        </div>
+      </div>
+      
+      <div class="modal-body">
+        {#if paginatedNews.length > 0}
+          {#each paginatedNews as news (news.id)}
+            <div class="news-item modal-news-item">
+              <div class="news-header">
+                <div class="news-title">{news.title}</div>
+                <span class="priority-badge {getPriorityClass(news.priority)}">
+                  {getPriorityLabel(news.priority)}
+                </span>
+              </div>
+              <div class="news-content">{news.content}</div>
+              <div class="news-meta">
+                <span class="news-time">{formatDateTime(news.date, news.time)}</span>
+                <span class="news-sender">{news.sender}</span>
+              </div>
             </div>
-            
-            <button 
-              type="button"
-              class="page-btn" 
-              disabled={currentPage === totalPages}
-              on:click={() => currentPage++}
-            >
-              下一页
-            </button>
-            <button 
-              type="button"
-              class="page-btn" 
-              disabled={currentPage === totalPages}
-              on:click={() => currentPage = totalPages}
-            >
-              末页
-            </button>
-            
-            <span class="page-info">第 {currentPage} / {totalPages} 页</span>
-          </div>
+          {/each}
+        {:else}
+          <div class="no-results">没有找到符合条件的新闻</div>
         {/if}
       </div>
+      
+      <!-- 分页器 -->
+      {#if totalPages > 1}
+        <div class="pagination">
+          <button 
+            type="button"
+            class="page-btn" 
+            disabled={currentPage === 1}
+            on:click={() => currentPage = 1}
+          >
+            首页
+          </button>
+          <button 
+            type="button"
+            class="page-btn" 
+            disabled={currentPage === 1}
+            on:click={() => currentPage--}
+          >
+            上一页
+          </button>
+          
+          <div class="page-numbers">
+            {#each Array(totalPages) as _, i}
+              {#if i + 1 === 1 || i + 1 === totalPages || (i + 1 >= currentPage - 1 && i + 1 <= currentPage + 1)}
+                <button 
+                  type="button"
+                  class="page-number" 
+                  class:active={currentPage === i + 1}
+                  on:click={() => currentPage = i + 1}
+                >
+                  {i + 1}
+                </button>
+              {:else if i + 1 === currentPage - 2 || i + 1 === currentPage + 2}
+                <span class="page-ellipsis">...</span>
+              {/if}
+            {/each}
+          </div>
+          
+          <button 
+            type="button"
+            class="page-btn" 
+            disabled={currentPage === totalPages}
+            on:click={() => currentPage++}
+          >
+            下一页
+          </button>
+          <button 
+            type="button"
+            class="page-btn" 
+            disabled={currentPage === totalPages}
+            on:click={() => currentPage = totalPages}
+          >
+            末页
+          </button>
+          
+          <span class="page-info">第 {currentPage} / {totalPages} 页</span>
+        </div>
+      {/if}
     </div>
   </div>
 {/if}
@@ -450,80 +460,108 @@ function formatDateTime(dateStr: string, timeStr?: string): string {
     opacity: 0.7;
   }
 
-  /* 全局模态框样式 */
-  .modal-portal {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    z-index: 9999;
+  /* 全屏模态框样式 */
+  .modal-root {
+    /* 完全脱离文档流 */
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    width: 100vw !important;
+    height: 100vh !important;
+    z-index: 999999 !important;
+    
+    /* 背景和模糊 */
+    background: rgba(0, 0, 0, 0.6) !important;
+    backdrop-filter: blur(12px) !important;
+    -webkit-backdrop-filter: blur(12px) !important;
+    
+    /* 居中布局 */
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    padding: 1rem !important;
+    
+    /* 动画 */
+    animation: fadeIn 0.2s ease-out !important;
+    
+    /* 滚动 */
+    overflow-y: auto !important;
   }
-
-  .modal-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: rgba(0, 0, 0, 0.5);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 1rem;
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
+  
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
   }
 
   .modal-content {
-    background: var(--card-bg);
-    border-radius: var(--radius-large);
+    background: white;
+    border-radius: 1rem;
     max-width: 900px;
     width: 100%;
-    max-height: 520vh;
+    max-height: 90vh;
     display: flex;
     flex-direction: column;
-    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
-    border: 1px solid var(--line-divider);
+    box-shadow: 0 25px 80px rgba(0, 0, 0, 0.4);
+    animation: slideUp 0.3s ease-out;
+    overflow: hidden;
+    position: relative;
+  }
+
+  :global(.dark) .modal-content {
+    background: oklch(0.23 0.01 var(--hue));
+  }
+
+  @keyframes slideUp {
+    from {
+      opacity: 0;
+      transform: translateY(30px) scale(0.95);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
   }
 
   .modal-header {
+    background: linear-gradient(135deg, var(--primary) 0%, oklch(0.65 0.14 calc(var(--hue) + 20)) 100%);
     display: flex;
     justify-content: space-between;
     align-items: center;
     padding: 1.5rem;
-    border-bottom: 1px solid var(--line-divider);
+    color: white;
   }
 
   .modal-title {
     font-size: 1.5rem;
     font-weight: 600;
-    color: var(--primary);
     margin: 0;
   }
 
-  :global(.dark) .modal-title {
-    color: oklch(0.75 0.14 var(--hue));
-  }
-
-  .close-button {
-    background: none;
+  .close-btn {
+    background: rgba(255, 255, 255, 0.2);
     border: none;
+    color: white;
+    width: 2rem;
+    height: 2rem;
+    border-radius: 50%;
     cursor: pointer;
-    padding: 0.5rem;
+    font-size: 1.5rem;
     display: flex;
     align-items: center;
     justify-content: center;
-    border-radius: 0.375rem;
-    transition: background 0.2s;
+    transition: all 0.2s;
+    line-height: 1;
   }
 
-  :global(.dark) .close-button {
-    color: rgba(255, 255, 255, 0.9);
-  }
-
-  .close-button:hover {
-    background: var(--btn-card-bg-hover);
+  .close-btn:hover {
+    background: rgba(255, 255, 255, 0.3);
+    transform: rotate(90deg);
   }
 
   /* 筛选器样式 */
@@ -532,8 +570,13 @@ function formatDateTime(dateStr: string, timeStr?: string): string {
     grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
     gap: 1rem;
     padding: 1rem 1.5rem;
-    border-bottom: 1px solid var(--line-divider);
-    background: var(--btn-card-bg-hover);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+    background: rgba(0, 0, 0, 0.02);
+  }
+
+  :global(.dark) .filters {
+    border-color: rgba(255, 255, 255, 0.1);
+    background: rgba(255, 255, 255, 0.02);
   }
 
   .filter-group {
@@ -555,8 +598,8 @@ function formatDateTime(dateStr: string, timeStr?: string): string {
   .filter-group select {
     padding: 0.5rem 2rem 0.5rem 0.75rem;
     border-radius: 0.375rem;
-    border: 1px solid var(--line-divider);
-    background: var(--card-bg);
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    background: white;
     font-size: 0.875rem;
     cursor: pointer;
     transition: all 0.2s;
@@ -568,6 +611,8 @@ function formatDateTime(dateStr: string, timeStr?: string): string {
   }
 
   :global(.dark) .filter-group select {
+    background-color: rgba(255, 255, 255, 0.05);
+    border-color: rgba(255, 255, 255, 0.1);
     color: rgba(255, 255, 255, 0.9);
   }
 
@@ -582,24 +627,6 @@ function formatDateTime(dateStr: string, timeStr?: string): string {
     box-shadow: 0 0 0 3px rgba(var(--primary-rgb, 88, 88, 88), 0.1);
   }
 
-  .filter-group select option {
-    padding: 0.5rem;
-    background: var(--card-bg);
-  }
-
-  :global(.dark) .filter-group select option {
-    color: rgba(255, 255, 255, 0.9);
-  }
-
-  .filter-group select option:hover {
-    background: var(--btn-card-bg-hover);
-  }
-
-  .filter-group select option:checked {
-    background: var(--primary);
-    color: white;
-  }
-
   .modal-body {
     padding: 1.5rem;
     overflow-y: auto;
@@ -609,8 +636,39 @@ function formatDateTime(dateStr: string, timeStr?: string): string {
     flex: 1;
   }
 
+  /* 模态框滚动条样式 */
+  .modal-body::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  .modal-body::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .modal-body::-webkit-scrollbar-thumb {
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 4px;
+    transition: background 0.2s;
+  }
+
+  .modal-body::-webkit-scrollbar-thumb:hover {
+    background: rgba(0, 0, 0, 0.3);
+  }
+
+  :global(.dark) .modal-body::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.2);
+  }
+
+  :global(.dark) .modal-body::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.3);
+  }
+
   .modal-news-item {
-    border: 1px solid var(--line-divider);
+    border: 1px solid rgba(0, 0, 0, 0.1);
+  }
+
+  :global(.dark) .modal-news-item {
+    border-color: rgba(255, 255, 255, 0.1);
   }
 
   .no-results {
@@ -631,15 +689,21 @@ function formatDateTime(dateStr: string, timeStr?: string): string {
     justify-content: center;
     gap: 0.5rem;
     padding: 1rem 1.5rem;
-    border-top: 1px solid var(--line-divider);
+    border-top: 1px solid rgba(0, 0, 0, 0.1);
     flex-wrap: wrap;
+    background: rgba(0, 0, 0, 0.02);
+  }
+
+  :global(.dark) .pagination {
+    border-color: rgba(255, 255, 255, 0.1);
+    background: rgba(255, 255, 255, 0.02);
   }
 
   .page-btn,
   .page-number {
     padding: 0.5rem 0.75rem;
-    border: 1px solid var(--line-divider);
-    background: var(--card-bg);
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    background: white;
     border-radius: 0.375rem;
     cursor: pointer;
     font-size: 0.875rem;
@@ -648,13 +712,20 @@ function formatDateTime(dateStr: string, timeStr?: string): string {
 
   :global(.dark) .page-btn,
   :global(.dark) .page-number {
+    background: rgba(255, 255, 255, 0.05);
+    border-color: rgba(255, 255, 255, 0.1);
     color: rgba(255, 255, 255, 0.9);
   }
 
   .page-btn:hover:not(:disabled),
   .page-number:hover {
-    background: var(--btn-card-bg-hover);
+    background: rgba(0, 0, 0, 0.05);
     border-color: var(--primary);
+  }
+
+  :global(.dark) .page-btn:hover:not(:disabled),
+  :global(.dark) .page-number:hover {
+    background: rgba(255, 255, 255, 0.1);
   }
 
   .page-btn:disabled {

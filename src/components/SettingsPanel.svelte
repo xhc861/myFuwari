@@ -405,40 +405,39 @@
   
   /* 美化设置面板滚动条 */
   #settings-panel::-webkit-scrollbar {
-    width: 6px;
+    width: 8px;
   }
   
   #settings-panel::-webkit-scrollbar-track {
-    background: rgba(0, 0, 0, 0.05);
-    border-radius: 3px;
-  }
-  
-  :global(.dark) #settings-panel::-webkit-scrollbar-track {
-    background: rgba(255, 255, 255, 0.05);
+    background: transparent;
   }
   
   #settings-panel::-webkit-scrollbar-thumb {
     background: rgba(0, 0, 0, 0.2);
-    border-radius: 3px;
+    border-radius: 4px;
     transition: background 0.2s;
+  }
+
+  #settings-panel::-webkit-scrollbar-thumb:hover {
+    background: rgba(0, 0, 0, 0.3);
   }
   
   :global(.dark) #settings-panel::-webkit-scrollbar-thumb {
     background: rgba(255, 255, 255, 0.2);
   }
-  
-  #settings-panel::-webkit-scrollbar-thumb:hover {
-    background: var(--primary);
+
+  :global(.dark) #settings-panel::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.3);
   }
   
   /* Firefox 滚动条样式 */
   #settings-panel {
     scrollbar-width: thin;
-    scrollbar-color: rgba(0, 0, 0, 0.2) rgba(0, 0, 0, 0.05);
+    scrollbar-color: rgba(0, 0, 0, 0.2) transparent;
   }
   
   :global(.dark) #settings-panel {
-    scrollbar-color: rgba(255, 255, 255, 0.2) rgba(255, 255, 255, 0.05);
+    scrollbar-color: rgba(255, 255, 255, 0.2) transparent;
   }
   
   #settings-panel h3 {
@@ -712,22 +711,29 @@
   
   /* 美化滚动条 */
   .music-list::-webkit-scrollbar {
-    width: 6px;
+    width: 8px;
   }
   
   .music-list::-webkit-scrollbar-track {
-    background: rgba(0, 0, 0, 0.05);
-    border-radius: 3px;
-  }
-  
-  :global(.dark) .music-list::-webkit-scrollbar-track {
-    background: rgba(255, 255, 255, 0.05);
+    background: transparent;
   }
   
   .music-list::-webkit-scrollbar-thumb {
     background: rgba(0, 0, 0, 0.2);
-    border-radius: 3px;
+    border-radius: 4px;
     transition: background 0.2s;
+  }
+
+  .music-list::-webkit-scrollbar-thumb:hover {
+    background: rgba(0, 0, 0, 0.3);
+  }
+  
+  :global(.dark) .music-list::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.2);
+  }
+
+  :global(.dark) .music-list::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.3);
   }
   
   :global(.dark) .music-list::-webkit-scrollbar-thumb {
