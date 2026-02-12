@@ -33,7 +33,7 @@
   
   let activeTab: 'effects' | 'music' | 'navbar' = 'effects';
   
-  const VERSION = '0.9.3-Rp Quality TEST1';
+  const VERSION = '0.9.5U STABLE';
   
   onMount(() => {
     loadSettings();
@@ -392,7 +392,7 @@
         </div>
       {/if}
       
-      <div class="version">v{VERSION}</div>
+      <div class="version">{VERSION}</div>
   </div>
 
 <style>
