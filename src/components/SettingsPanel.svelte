@@ -1,188 +1,180 @@
 <script lang="ts">
-import { onMount } from "svelte";
-
-// 特效设置
-let confettiEnabled = true;
-let particlesEnabled = true;
-let shootingStarsEnabled = true;
-let lanternsEnabled = false;
-let grayscaleEnabled = false;
-
-// 灯笼文字
-let lanternText = {
-	text1: "元",
-	text2: "旦",
-	text3: "快",
-	text4: "乐",
-};
-
-// 导航栏设置
-let navbarLinks = {
-	home: true,
-	archive: true,
-	about: true,
-	friends: true,
-	gallery: true,
-};
-
-// 音乐设置
-let musicPlaylist: Array<{ title: string; artist: string; src: string }> = [];
-let newSongTitle = "";
-let newSongArtist = "";
-let newSongSrc = "";
-
-let activeTab: "effects" | "music" | "navbar" = "effects";
-
-const VERSION = "0.9.3 Quality";
-
-onMount(() => {
-	loadSettings();
-
-	// 监听导航栏按钮点击
-	const settingsBtn = document.getElementById("effects-settings-switch");
-	if (settingsBtn) {
-		settingsBtn.addEventListener("click", togglePanel);
-	}
-
-	return () => {
-		if (settingsBtn) {
-			settingsBtn.removeEventListener("click", togglePanel);
-		}
-	};
-});
-
-function loadSettings() {
-	const saved = localStorage.getItem("effectsSettings");
-	if (saved) {
-		const settings = JSON.parse(saved);
-		confettiEnabled = settings.confettiEnabled ?? true;
-		particlesEnabled = settings.particlesEnabled ?? true;
-		shootingStarsEnabled = settings.shootingStarsEnabled ?? true;
-		lanternsEnabled = settings.lanternsEnabled ?? false;
-		grayscaleEnabled = settings.grayscaleEnabled ?? false;
-		if (settings.lanternText) {
-			lanternText = settings.lanternText;
-		}
-		if (settings.navbarLinks) {
-			navbarLinks = settings.navbarLinks;
-		}
-	}
-
-	// 加载音乐播放列表
-	const savedPlaylist = localStorage.getItem("musicPlaylist");
-	if (savedPlaylist) {
-		try {
-			musicPlaylist = JSON.parse(savedPlaylist);
-		} catch (e) {
-			console.error("Failed to load music playlist:", e);
-		}
-	}
-
-	applySettings();
-}
-
-function saveSettings() {
-	localStorage.setItem(
-		"effectsSettings",
-		JSON.stringify({
-			confettiEnabled,
-			particlesEnabled,
-			shootingStarsEnabled,
-			lanternsEnabled,
-			grayscaleEnabled,
-			lanternText,
-			navbarLinks,
-		}),
-	);
-
-	// 保存音乐播放列表
-	localStorage.setItem("musicPlaylist", JSON.stringify(musicPlaylist));
-}
-
-function applySettings() {
-	window.dispatchEvent(
-		new CustomEvent("effectsSettingsChanged", {
-			detail: {
-				confettiEnabled,
-				particlesEnabled,
-				shootingStarsEnabled,
-				lanternsEnabled,
-				grayscaleEnabled,
-				lanternText,
-				navbarLinks,
-				musicPlaylist,
-			},
-		}),
-	);
-
-	saveSettings();
-}
-
-function togglePanel() {
-	const panel = document.getElementById("settings-panel");
-	if (panel) {
-		panel.classList.toggle("float-panel-closed");
-	}
-}
-
-function updateLanternText() {
-	applySettings();
-}
-
-function addSong() {
-	if (newSongTitle.trim() && newSongArtist.trim() && newSongSrc.trim()) {
-		musicPlaylist = [
-			...musicPlaylist,
-			{
-				title: newSongTitle.trim(),
-				artist: newSongArtist.trim(),
-				src: newSongSrc.trim(),
-			},
-		];
-		newSongTitle = "";
-		newSongArtist = "";
-		newSongSrc = "";
-		saveSettings();
-		applySettings();
-	}
-}
-
-function removeSong(index: number) {
-	musicPlaylist = musicPlaylist.filter((_, i) => i !== index);
-	saveSettings();
-	applySettings();
-}
-
-function moveSongUp(index: number) {
-	if (index > 0) {
-		const temp = musicPlaylist[index];
-		musicPlaylist[index] = musicPlaylist[index - 1];
-		musicPlaylist[index - 1] = temp;
-		musicPlaylist = [...musicPlaylist];
-		saveSettings();
-		applySettings();
-	}
-}
-
-function moveSongDown(index: number) {
-	if (index < musicPlaylist.length - 1) {
-		const temp = musicPlaylist[index];
-		musicPlaylist[index] = musicPlaylist[index + 1];
-		musicPlaylist[index + 1] = temp;
-		musicPlaylist = [...musicPlaylist];
-		saveSettings();
-		applySettings();
-	}
-}
-
-function handleKeydown(event: KeyboardEvent) {
-	if (event.key === "Escape") {
-		const panel = document.getElementById("settings-panel");
-		if (panel && !panel.classList.contains("float-panel-closed")) {
-			panel.classList.add("float-panel-closed");
-		}
-	}
-}
+  import { onMount } from 'svelte';
+  
+  // 特效设置
+  let confettiEnabled = true;
+  let particlesEnabled = true;
+  let shootingStarsEnabled = true;
+  let lanternsEnabled = true;  // 改为 true，默认开启灯笼
+  let grayscaleEnabled = false;
+  
+  // 灯笼文字
+  let lanternText = {
+    text1: '元',
+    text2: '旦',
+    text3: '快',
+    text4: '乐'
+  };
+  
+  // 导航栏设置
+  let navbarLinks = {
+    home: true,
+    archive: true,
+    about: true,
+    friends: true,
+    gallery: true
+  };
+  
+  // 音乐设置
+  let musicPlaylist: Array<{title: string, artist: string, src: string}> = [];
+  let newSongTitle = '';
+  let newSongArtist = '';
+  let newSongSrc = '';
+  
+  let activeTab: 'effects' | 'music' | 'navbar' = 'effects';
+  
+  const VERSION = '0.9.3-Rp Quality TEST1';
+  
+  onMount(() => {
+    loadSettings();
+    
+    // 监听导航栏按钮点击
+    const settingsBtn = document.getElementById('effects-settings-switch');
+    if (settingsBtn) {
+      settingsBtn.addEventListener('click', togglePanel);
+    }
+    
+    return () => {
+      if (settingsBtn) {
+        settingsBtn.removeEventListener('click', togglePanel);
+      }
+    };
+  });
+  
+  function loadSettings() {
+    const saved = localStorage.getItem('effectsSettings');
+    if (saved) {
+      const settings = JSON.parse(saved);
+      confettiEnabled = settings.confettiEnabled ?? true;
+      particlesEnabled = settings.particlesEnabled ?? true;
+      shootingStarsEnabled = settings.shootingStarsEnabled ?? true;
+      lanternsEnabled = settings.lanternsEnabled ?? false;
+      grayscaleEnabled = settings.grayscaleEnabled ?? false;
+      if (settings.lanternText) {
+        lanternText = settings.lanternText;
+      }
+      if (settings.navbarLinks) {
+        navbarLinks = settings.navbarLinks;
+      }
+    }
+    
+    // 加载音乐播放列表
+    const savedPlaylist = localStorage.getItem('musicPlaylist');
+    if (savedPlaylist) {
+      try {
+        musicPlaylist = JSON.parse(savedPlaylist);
+      } catch (e) {
+        console.error('Failed to load music playlist:', e);
+      }
+    }
+    
+    applySettings();
+  }
+  
+  function saveSettings() {
+    localStorage.setItem('effectsSettings', JSON.stringify({
+      confettiEnabled,
+      particlesEnabled,
+      shootingStarsEnabled,
+      lanternsEnabled,
+      grayscaleEnabled,
+      lanternText,
+      navbarLinks
+    }));
+    
+    // 保存音乐播放列表
+    localStorage.setItem('musicPlaylist', JSON.stringify(musicPlaylist));
+  }
+  
+  function applySettings() {
+    window.dispatchEvent(new CustomEvent('effectsSettingsChanged', {
+      detail: {
+        confettiEnabled,
+        particlesEnabled,
+        shootingStarsEnabled,
+        lanternsEnabled,
+        grayscaleEnabled,
+        lanternText,
+        navbarLinks,
+        musicPlaylist
+      }
+    }));
+    
+    saveSettings();
+  }
+  
+  function togglePanel() {
+    const panel = document.getElementById('settings-panel');
+    if (panel) {
+      panel.classList.toggle('float-panel-closed');
+    }
+  }
+  
+  function updateLanternText() {
+    applySettings();
+  }
+  
+  function addSong() {
+    if (newSongTitle.trim() && newSongArtist.trim() && newSongSrc.trim()) {
+      musicPlaylist = [...musicPlaylist, {
+        title: newSongTitle.trim(),
+        artist: newSongArtist.trim(),
+        src: newSongSrc.trim()
+      }];
+      newSongTitle = '';
+      newSongArtist = '';
+      newSongSrc = '';
+      saveSettings();
+      applySettings();
+    }
+  }
+  
+  function removeSong(index: number) {
+    musicPlaylist = musicPlaylist.filter((_, i) => i !== index);
+    saveSettings();
+    applySettings();
+  }
+  
+  function moveSongUp(index: number) {
+    if (index > 0) {
+      const temp = musicPlaylist[index];
+      musicPlaylist[index] = musicPlaylist[index - 1];
+      musicPlaylist[index - 1] = temp;
+      musicPlaylist = [...musicPlaylist];
+      saveSettings();
+      applySettings();
+    }
+  }
+  
+  function moveSongDown(index: number) {
+    if (index < musicPlaylist.length - 1) {
+      const temp = musicPlaylist[index];
+      musicPlaylist[index] = musicPlaylist[index + 1];
+      musicPlaylist[index + 1] = temp;
+      musicPlaylist = [...musicPlaylist];
+      saveSettings();
+      applySettings();
+    }
+  }
+  
+  function handleKeydown(event: KeyboardEvent) {
+    if (event.key === 'Escape') {
+      const panel = document.getElementById('settings-panel');
+      if (panel && !panel.classList.contains('float-panel-closed')) {
+        panel.classList.add('float-panel-closed');
+      }
+    }
+  }
 </script>
 
 <svelte:window on:keydown={handleKeydown} />
@@ -268,7 +260,8 @@ function handleKeydown(event: KeyboardEvent) {
             <label class="checkbox-label">
               <input type="checkbox" bind:checked={grayscaleEnabled} on:change={applySettings} />
               <span class="checkbox-custom"></span>
-              <span class="label-text">黑白滤镜（纪念日）</span>
+              <span class="label-text">黑白模式
+              </span>
             </label>
           </div>
         </div>

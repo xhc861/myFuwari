@@ -12,13 +12,15 @@ onMount(() => {
 	const saved = localStorage.getItem("effectsSettings");
 	if (saved) {
 		const settings = JSON.parse(saved);
-		show = settings.lanternsEnabled ?? false;
+		show = settings.lanternsEnabled ?? true; 
 		if (settings.lanternText) {
 			text1 = settings.lanternText.text1;
 			text2 = settings.lanternText.text2;
 			text3 = settings.lanternText.text3;
 			text4 = settings.lanternText.text4;
 		}
+	} else {
+		show = true;
 	}
 
 	// 监听设置变化
@@ -140,13 +142,13 @@ onMount(() => {
   }
 
   .deng-box-left2 {
-    left: 80px;
+    left: 120px;  /* 从 80px 改为 120px，增加间距 */
     z-index: 998;
   }
 
   /* 右侧灯笼位置 */
   .deng-box-right1 {
-    right: 80px;
+    right: 120px;  /* 从 80px 改为 120px，增加间距 */
     z-index: 999;
   }
 
