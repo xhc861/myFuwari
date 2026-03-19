@@ -49,6 +49,23 @@
     "date": "2026-02-05",
     "time": "21:59:54",
     "sender": "xhc861",
-    "priority": "doing"
+    "priority": "low"
+  },
+  {
+    "id": "7",
+    "title": "xhc861的主QQ号解封完成",
+    "content": "重大皆喜！",
+    "date": "2026-03-14",
+    "sender": "xhc861",
+    "priority": "high"
+  },
+  {
+    "id": "8",
+    "title": "博客新版本即将发布",
+    "content": "为中考设计新功能，仅此而已 吗？",
+    "date": "2026-03-19",
+    "time": "23:45:23",
+    "sender": "xhc861",
+    "priority": "medium"
   }
 ]

@@ -5,7 +5,7 @@
   let confettiEnabled = true;
   let particlesEnabled = true;
   let shootingStarsEnabled = true;
-  let lanternsEnabled = true;  // 改为 true，默认开启灯笼
+  let lanternsEnabled = false;  // 默认关闭灯笼
   let grayscaleEnabled = false;
   
   // 灯笼文字
@@ -33,7 +33,7 @@
   
   let activeTab: 'effects' | 'music' | 'navbar' = 'effects';
   
-  const VERSION = '0.9.5U STABLE';
+  const VERSION = '0.9.6 Wanna';
   
   onMount(() => {
     loadSettings();

@@ -70,14 +70,15 @@ onMount(async () => {
 
 <style>
   .ua-badge-container {
-    display: inline-block;
+    display: flex;
+    justify-content: center;
     margin: 0.5rem 0;
     width: 100%;
-    max-width: 800px;
   }
 
   .ua-badge {
     width: 100%;
+    max-width: 800px;
     padding: 1rem 1.5rem;
     background: rgba(0, 0, 0, 0.05);
     border: 1px solid rgba(0, 0, 0, 0.1);

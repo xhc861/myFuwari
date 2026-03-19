@@ -5,6 +5,7 @@ import CountdownModule from "./CountdownModule.svelte";
 import ExtraFeaturesModule from "./ExtraFeaturesModule.svelte";
 import MicroNewsModule from "./MicroNewsModule.svelte";
 import ScoreboardModule from "./ScoreboardModule.svelte";
+import SportsRecordModule from "./SportsRecordModule.svelte";
 import TodoModule from "./TodoModule.svelte";
 </script>
 
@@ -12,6 +13,11 @@ import TodoModule from "./TodoModule.svelte";
   <!-- 日历模块 - 顶部 -->
   <div class="calendar-section">
     <CalendarModule />
+  </div>
+
+  <!-- 体育成绩 - 紧凑显示 -->
+  <div class="sports-record-section">
+    <SportsRecordModule />
   </div>
 
   <!-- 倒计时模块 -->
@@ -53,6 +59,7 @@ import TodoModule from "./TodoModule.svelte";
   .calendar-section,
   .countdown-section,
   .micro-news-section,
+  .sports-record-section,
   .extra-features-section,
   .ua-section {
     width: 100%;

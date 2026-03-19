@@ -1,27 +1,17 @@
 [
   {
     "id": "1",
-    "name": "2026届初三期末考试",
-    "targetDate": "2026-01-29"
+    "name": "体育中考",
+    "targetDate": "2026-04-20"
   },
   {
     "id": "3",
-    "name": "SpaceX Starship IFT-12 发射",
-    "targetDate": "2026-03-04"
+    "name": "中考",
+    "targetDate": "2026-06-22"
   },
   {
     "id": "2",
-    "name": "除夕",
-    "targetDate": "2026-02-16"
-  },
-  {
-    "id": "4",
-    "name": "体育中考",
-    "targetDate": "2026-04-21"
-  },
-  {
-    "id": "5",
-    "name": "中考",
-    "targetDate": "2026-06-20"
+    "name": "一模组考",
+    "targetDate": "2026-04-01"
   }
 ]
