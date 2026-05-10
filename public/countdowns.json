@@ -2,26 +2,21 @@
   {
     "id": "1",
     "name": "花溪区模考",
-    "targetDate": "2026-03-30"
+    "targetDate": "2026-05-20"
   },
   {
     "id": "1.1",
-    "name": "体育中考",
-    "targetDate": "2026-04-20"
+    "name": "IFT-12",
+    "targetDate": "2026-05-16"
   },
   {
     "id": "1.2",
-    "name": "贵州省一模",
-    "targetDate": "2026-04-23"
+    "name": "组考模考",
+    "targetDate": "2026-05-16"
   },
   {
     "id": "3",
     "name": "中考",
-    "targetDate": "2026-06-22"
-  },
-  {
-    "id": "2",
-    "name": "一模组考",
-    "targetDate": "2026-04-01"
+    "targetDate": "2026-06-20"
   }
 ]
